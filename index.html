@@ -217,12 +217,12 @@
             border-radius: 50px;
             margin-top: 1.5rem;
             transition: 0.3s;
-            opacity: 0.6; /* Un poco apagado por defecto */
+            opacity: 0.6; 
         }
         .extras-row.active {
              border-color: var(--gold);
              background: #1a1a1a;
-             opacity: 1; /* Se ilumina cuando se activa */
+             opacity: 1; 
              box-shadow: 0 0 15px rgba(238, 201, 150, 0.1);
         }
         .extra-price {
@@ -319,7 +319,7 @@
 <body>
 
     <div class="hero-section">
-        <img src="oven.png" alt="Horno de Leña" class="oven-bg">
+        <img src="oven.jpg" alt="Horno de Leña" class="oven-bg">
         <div class="hero-overlay"></div>
         <img src="logopizza.png" alt="De La Monja Pizza" class="logo-img">
     </div>
@@ -454,23 +454,29 @@
 
         function sendOrder() {
             // Calcular base y extras para el mensaje
-            let baseIngs = selectedIngredients.slice(0, 2); // Los primeros 2
-            let extraIngs = selectedIngredients.slice(2);   // Del 3ro en adelante
+            let baseIngs = selectedIngredients.slice(0, 2); 
+            let extraIngs = selectedIngredients.slice(2);   
             let finalPrice = BASE_PRICE + (extraIngs.length * EXTRA_PRICE);
 
-            let text = "Hola De La Monja, quiero pedir la Promo Pizza Artesanal.";
+            let text = "Hola De La Monja, quiero pedir la Promo Pizza Artesanal.\n\n";
             
             if (baseIngs.length > 0) {
-                text += " BASE: " + baseIngs.join(", ") + ".";
+                text += "*Ingredientes Base:*\n";
+                baseIngs.forEach(ing => {
+                    text += "- " + ing + "\n";
+                });
             } else {
-                text += " (Sin ingredientes seleccionados).";
+                text += "(Sin ingredientes seleccionados)\n";
             }
 
             if (extraIngs.length > 0) {
-                text += " EXTRAS (+$" + (extraIngs.length * EXTRA_PRICE) + "): " + extraIngs.join(", ") + ".";
+                text += "\n*Extras (+$" + (extraIngs.length * EXTRA_PRICE) + "):*\n";
+                extraIngs.forEach(ing => {
+                    text += "- " + ing + "\n";
+                });
             }
 
-            text += " TOTAL A PAGAR: $" + finalPrice;
+            text += "\n*TOTAL A PAGAR: $" + finalPrice + "*";
 
             let url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(text)}`;
             window.open(url, '_blank');
