@@ -2,851 +2,132 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>De La Monja | Pizza a la Leña</title>
-    <meta name="description" content="Pizza a la leña y cocina artesanal en Tapalpa, Jalisco. De la Monja: tradición familiar y masa madre.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocina | De La Monja</title>
     <style>
-        /* --- THEME: CINEMATIC OVEN (SOFT VERSION) --- */
-        :root {
-            --bg-dark: #0f0f0f;
-            --brand-red: #ff0013;
-            --brand-glow: rgba(255, 0, 19, 0.6);
-            --gold: #eec996;
-            --text-white: #ffffff;
-            --text-grey: #cccccc;
-            --glass: rgba(20, 20, 20, 0.95);
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-white);
-            padding-bottom: 120px;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* --- HERO SECTION --- */
-        .hero-section {
-            position: relative;
-            height: 55vh; 
-            min-height: 380px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 2rem;
-            overflow: hidden;
-        }
-
-        .oven-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-            filter: brightness(0.6) blur(2px);
-            animation: slowZoom 30s infinite alternate;
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(15,15,15,1) 98%);
-            z-index: 0;
-        }
-
-        .logo-img {
-            position: relative;
-            z-index: 10;
-            max-width: 150px;
-            width: 35%;
-            filter: drop-shadow(0 0 25px rgba(255, 0, 19, 0.6));
-            margin-top: 1rem;
-            animation: floatLogo 6s ease-in-out infinite;
-        }
-
-        /* --- THE DEAL CARD --- */
-        .deal-wrapper {
-            position: relative;
-            z-index: 10;
-            margin-top: -60px;
-            padding: 0 15px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .hero-card {
-            background: rgba(20, 20, 20, 0.85);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-top: 4px solid var(--brand-red);
-            border-radius: 20px;
-            max-width: 500px;
-            width: 100%;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            animation: slideUpCard 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        .price-tag {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--text-white);
-            line-height: 1;
-            text-shadow: 0 0 20px var(--brand-red);
-            margin: 10px 0;
-        }
-
-        .deal-title {
-            color: var(--gold);
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-
-        .deal-desc {
-            font-size: 0.95rem;
-            color: #ddd;
-            margin: 1rem 0;
-            line-height: 1.5;
-        }
-
-        .specs-row {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .spec { display: flex; flex-direction: column; align-items: center; font-size: 0.8rem; color: var(--text-grey); }
-        .spec svg { width: 20px; fill: var(--brand-red); margin-bottom: 5px; }
-
-        /* --- MENU SECTIONS --- */
-        .container {
-            max-width: 800px;
-            width: 90%;
-            margin: 0 auto;
-            position: relative;
-            z-index: 5;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 2rem 0 1rem;
-        }
-        .line { flex: 1; height: 1px; background: rgba(255,255,255,0.15); }
-        .section-title {
-            color: var(--brand-red);
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-
-        /* --- PIZZA TABS --- */
-        .pizza-tabs-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 15px;
-        }
-        .pizza-tab {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.2);
-            color: var(--text-grey);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .pizza-tab.active {
-            background: var(--brand-red);
-            color: white;
-            border-color: var(--brand-red);
-            box-shadow: 0 0 10px rgba(255, 0, 19, 0.4);
-            font-weight: bold;
-        }
-        .pizza-tab:hover { border-color: var(--gold); color: white; }
-        .add-pizza-btn { background: var(--gold); color: #000; border: none; font-weight: bold; }
-        .delete-pizza-btn {
-            background: #333;
-            color: #ff4444;
-            border: 1px solid #555;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            gap: 5px;
-        }
-        .delete-pizza-btn.visible { display: inline-flex; }
-
-        /* Ingredients Grid */
-        .ing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-        }
-
-        .ing-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 10px;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s;
-            cursor: pointer;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .ing-card:hover { background: rgba(255, 255, 255, 0.08); }
-        .ing-card.selected {
-            background: rgba(255, 0, 19, 0.15);
-            border-color: var(--brand-red);
-            box-shadow: 0 0 10px rgba(255,0,19,0.2);
-        }
-        .ing-card.selected .ing-dot { background: var(--brand-red); box-shadow: 0 0 5px var(--brand-red); }
-        .ing-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; transition: 0.2s; }
-        .ing-name { font-weight: 500; font-size: 0.95rem; }
-
-        .dressings-box {
-            background: radial-gradient(circle at left, rgba(238, 201, 150, 0.1), transparent);
-            border-left: 3px solid var(--gold);
-            padding: 20px;
-            margin-top: 2rem;
-            border-radius: 5px;
-        }
-        .dress-title { color: var(--gold); font-weight: bold; margin-bottom: 5px; display: block; text-transform: uppercase; font-size: 0.9rem;}
-        .dress-list { font-size: 0.9rem; color: #ccc; line-height: 1.6; }
-
-        .extras-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #111;
-            border: 1px solid #333;
-            padding: 15px 20px;
-            border-radius: 50px;
-            margin-top: 1.5rem;
-            transition: 0.3s;
-            opacity: 0.6; 
-        }
-        .extras-row.active {
-             border-color: var(--gold);
-             background: #1a1a1a;
-             opacity: 1; 
-             box-shadow: 0 0 15px rgba(238, 201, 150, 0.1);
-        }
-        .extra-price {
-            background: #333;
-            color: #888;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            transition: 0.3s;
-        }
-        .extras-row.active .extra-price { background: var(--brand-red); color: white; }
-
-        /* --- PRICE CALCULATOR --- */
-        .price-calculator {
-            text-align: center;
-            margin-top: 2rem;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-            animation: pulsePrice 2s infinite alternate;
-        }
-        .total-label {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            color: var(--text-grey);
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-        .total-amount {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--gold);
-            text-shadow: 0 0 10px rgba(238, 201, 150, 0.3);
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 4rem;
-            color: #666;
-            font-size: 0.9rem;
-            border-top: 1px solid #222;
-            padding-top: 2rem;
-        }
-        .map-btn {
-            display: inline-block;
-            margin-top: 10px;
-            color: var(--text-white);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--brand-red);
-        }
-
-        .fab {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #25D366;
-            color: white;
-            padding: 14px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 2px solid rgba(255,255,255,0.2);
-            z-index: 90;
-            white-space: nowrap;
-            transition: transform 0.2s;
-            cursor: pointer;
-        }
-        .fab:hover { transform: translateX(-50%) scale(1.05); }
-        .fab svg { width: 22px; fill: white; }
-
-        /* --- REVIEW MODAL --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 200;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-content {
-            background: var(--bg-dark);
-            border: 1px solid var(--gold);
-            border-radius: 20px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            transform: translateY(20px);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 30px rgba(238, 201, 150, 0.15);
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .modal-overlay.active .modal-content { transform: translateY(0); }
-        .modal-title {
-            color: var(--gold);
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            flex-shrink: 0;
-        }
-        .modal-summary {
-            text-align: left;
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            overflow-y: auto;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: #ddd;
-            flex-grow: 1;
-        }
-        .pizza-summary-item {
-            border-bottom: 1px dashed rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .pizza-summary-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .summary-total {
-            border-top: 1px solid rgba(255,255,255,0.2);
-            margin-top: 10px;
-            padding-top: 10px;
-            text-align: right;
-            font-size: 1.3rem;
-            color: var(--brand-red);
-            font-weight: bold;
-        }
+        :root { --bg: #111; --red: #ff4444; --green: #00C851; --text: #fff; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        h1, h2 { text-align: center; color: #eec996; }
         
-        /* DELIVERY OPTIONS (RESPONSIVE GRID) */
-        .delivery-options {
-            display: grid;
-            /* Se adapta: crea tantas columnas como quepan (mínimo 100px ancho cada una) */
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 8px;
-            margin-bottom: 1.5rem;
-            flex-shrink: 0;
+        /* SWITCH GIGANTE */
+        .shop-switch {
+            background: #333; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px; border: 2px solid #555; cursor: pointer; transition: 0.3s;
         }
-        .delivery-option {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid #444;
-            padding: 12px 5px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start; /* Alineación superior */
-            gap: 4px;
-            color: #bbb;
-            text-align: center;
-            position: relative;
-            min-height: 70px; /* Altura uniforme */
-        }
-        .delivery-option input { display: none; }
-        .delivery-option span.opt-title { display: block; font-weight: bold; color: white; line-height: 1.2;}
-        .delivery-option span.opt-sub { font-size: 0.7rem; color: #777; font-weight: normal; margin-top: 2px;}
-        
-        .delivery-option.active {
-            background: rgba(255, 0, 19, 0.15);
-            border-color: var(--brand-red);
-            color: white;
-            box-shadow: 0 0 10px rgba(255,0,19,0.2);
-        }
-        
-        /* Enlace sutil */
-        .ig-link {
-            font-size: 0.7rem;
-            color: var(--gold);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--gold);
-            margin-top: auto; /* Empuja el link al fondo */
-            opacity: 0.8;
-            transition: 0.2s;
-            z-index: 10;
-        }
-        .ig-link:hover { opacity: 1; border-bottom-style: solid; }
+        .shop-switch.open { background: rgba(0, 200, 81, 0.2); border-color: var(--green); }
+        .shop-switch.closed { background: rgba(255, 68, 68, 0.2); border-color: var(--red); }
+        .status-text { font-size: 2rem; font-weight: bold; display: block; margin-bottom: 5px; }
 
-        .name-input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 1.5rem;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
-            flex-shrink: 0;
+        /* LISTA */
+        .ing-control-list { display: grid; gap: 10px; }
+        .ing-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444;
         }
-        .name-input:focus { border-color: var(--gold); box-shadow: 0 0 8px rgba(238, 201, 150, 0.3); }
-        .name-input.error { border-color: var(--brand-red); animation: shake 0.4s; }
+        .ing-name { font-size: 1.1rem; }
         
-        .modal-actions { display: flex; gap: 10px; justify-content: center; flex-shrink: 0;}
-        .btn-modal { padding: 12px 20px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; flex: 1; font-size: 1rem; }
-        .btn-cancel { background: transparent; border: 1px solid #555; color: #ccc; }
-        .btn-confirm { background: var(--brand-red); color: white; box-shadow: 0 5px 15px rgba(255, 0, 19, 0.4); }
-
-        @keyframes slowZoom { from { transform: scale(1); } to { transform: scale(1.1); } }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes slideUpCard { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes pulsePrice { from { border-color: rgba(255,255,255,0.1); } to { border-color: rgba(238, 201, 150, 0.4); } }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
-
-        @media (max-width: 600px) {
-            .logo-img { max-width: 130px; margin-top: 0.5rem; }
-            .hero-section { height: 50vh; }
-            .price-tag { font-size: 2.5rem; }
-            .ing-grid { grid-template-columns: 1fr 1fr; }
+        .toggle-btn {
+            padding: 8px 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer;
         }
+        .toggle-btn.on { background: var(--green); color: white; }
+        .toggle-btn.off { background: var(--red); color: white; opacity: 0.6; }
     </style>
 </head>
 <body>
 
-    <div class="hero-section">
-        <img src="oven.jpg" alt="Horno de Leña" class="oven-bg">
-        <div class="hero-overlay"></div>
-        <img src="logopizza.png" alt="De La Monja Pizza" class="logo-img">
+    <h1>👨‍🍳 CONTROL DE COCINA</h1>
+
+    <div id="shop-status-btn" class="shop-switch" onclick="toggleShop()">
+        <span class="status-text" id="status-label">Conectando...</span>
+        <span style="font-size:0.9rem; color:#ccc;">(Clic para cambiar estado)</span>
     </div>
 
-    <div class="deal-wrapper">
-        <div class="hero-card">
-            <div class="deal-title">Arma tus Pizzas</div>
-            <div class="price-tag">$160</div>
-            <div class="deal-desc">
-                Base de <strong>Masa Madre con Romero</strong>.<br>
-                Incluye <strong>2 ingredientes base</strong>.<br>
-                <span style="font-size:0.85rem; color:var(--gold);">¡Agrega los extras que quieras! (+$10 c/u)</span>
-            </div>
-            
-            <div class="specs-row">
-                <div class="spec">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                    <span>30 CM</span>
-                </div>
-                <div class="spec">
-                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                    <span>1-2 Pers.</span>
-                </div>
-            </div>
-        </div>
-    </div>
+    <h2>Inventario de Ingredientes</h2>
+    <div class="ing-control-list" id="ing-list"></div>
 
-    <div class="container">
-        
-        <div class="section-header" style="justify-content: space-between;">
-            <div class="section-title">Tu Pedido</div>
-            <button class="delete-pizza-btn" id="delete-pizza-btn" onclick="removeCurrentPizza()">
-                <svg style="width:14px; fill:#ff4444;" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                Eliminar Pizza
-            </button>
-        </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        <div class="pizza-tabs-container" id="pizza-tabs">
-            </div>
+        // TUS CREDENCIALES REALES (Extraídas de tus imágenes)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
+            authDomain: "delamonjapizza.firebaseapp.com",
+            databaseURL: "https://delamonjapizza-default-rtdb.firebaseio.com",
+            projectId: "delamonjapizza",
+            storageBucket: "delamonjapizza.firebasestorage.app",
+            messagingSenderId: "591665050822",
+            appId: "1:591665050822:web:7358f238adc6dbe05213c7",
+            measurementId: "G-LG2P62XW75"
+        };
 
-        <div class="section-header">
-            <div class="line"></div>
-            <div class="section-title">Elige Ingredientes</div>
-            <div class="line"></div>
-        </div>
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        <div class="ing-grid" id="ingredients-list">
-            <div class="ing-card" onclick="toggleIngredient(this, 'Jamón de Pavo')"><div class="ing-dot"></div><div class="ing-name">Jamón de Pavo</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Peperoni')"><div class="ing-dot"></div><div class="ing-name">Peperoni</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Salami')"><div class="ing-dot"></div><div class="ing-name">Salami</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Tocino')"><div class="ing-dot"></div><div class="ing-name">Tocino</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Salchicha Frankfurt')"><div class="ing-dot"></div><div class="ing-name">Salchicha Frankfurt</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Aceituna negra')"><div class="ing-dot"></div><div class="ing-name">Aceituna negra</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Champiñones')"><div class="ing-dot"></div><div class="ing-name">Champiñones</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Jitomate cherry')"><div class="ing-dot"></div><div class="ing-name">Jitomate cherry</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Cebolla morada')"><div class="ing-dot"></div><div class="ing-name">Cebolla morada</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Pimientos encurtidos')"><div class="ing-dot"></div><div class="ing-name">Pimientos encurtidos</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Compota de cebolla')"><div class="ing-dot"></div><div class="ing-name">Compota de cebolla</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Arúgula')"><div class="ing-dot"></div><div class="ing-name">Arúgula</div></div>
-            <div class="ing-card" onclick="toggleIngredient(this, 'Queso de cabra')"><div class="ing-dot"></div><div class="ing-name">Queso de cabra</div></div>
-        </div>
+        // Lista Maestra para inicializar la BD la primera vez
+        const masterIngredients = [
+            "Jamón de Pavo", "Peperoni", "Salami", "Tocino", "Salchicha Frankfurt",
+            "Aceituna negra", "Champiñones", "Jitomate cherry", "Cebolla morada",
+            "Pimientos encurtidos", "Compota de cebolla", "Arúgula", "Queso de cabra"
+        ];
 
-        <div class="extras-row" id="extra-row">
-            <span id="extra-label"><strong>¿Ingredientes Extra? (+$10 c/u)</strong></span>
-            <div class="extra-price" id="extra-check">+</div>
-        </div>
+        const statusRef = ref(db, 'shopStatus');
+        const ingredientsRef = ref(db, 'ingredients');
 
-        <div class="price-calculator">
-            <div class="total-label">Total a Pagar</div>
-            <div class="total-amount" id="total-display">$160</div>
-        </div>
+        let isShopOpen = false;
 
-        <div class="dressings-box">
-            <span class="dress-title">Aderezos (incluidos)</span>
-            <div class="dress-list">
-                Chile quebrado, Chile en aceite, Ketchup picante, Pesto, Chimichurri.
-            </div>
-        </div>
+        onValue(statusRef, (snapshot) => {
+            isShopOpen = snapshot.val();
+            renderShopStatus();
+        });
 
-    </div>
+        window.toggleShop = () => {
+            set(statusRef, !isShopOpen);
+        };
 
-    <div class="footer">
-        <div>Hidalgo 135, Centro, Tapalpa, Jal.</div>
-        <a href="https://www.google.com/maps/search/?api=1&query=Hidalgo+135+Tapalpa+Jalisco" class="map-btn" target="_blank">Ver Mapa</a>
-    </div>
-
-    <div class="fab" id="open-modal-btn" onclick="openReviewModal()">
-        <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-        <span>Revisar y Pedir</span>
-    </div>
-
-    <div class="modal-overlay" id="review-modal">
-        <div class="modal-content">
-            <div class="modal-title">Tu Pedido Completo</div>
-            
-            <div class="modal-summary" id="modal-summary-content">
-                </div>
-
-            <div class="delivery-options">
-                
-                <label class="delivery-option active" id="opt-pickup" onclick="setDelivery('pickup')">
-                    <input type="radio" name="delivery" value="pickup" checked>
-                    <span class="opt-title">🥡 Pasar a Recoger</span>
-                    <span class="opt-sub">Hidalgo 135, Centro</span>
-                </label>
-
-                <label class="delivery-option" id="opt-brewery" onclick="setDelivery('brewery')">
-                    <input type="radio" name="delivery" value="brewery">
-                    <span class="opt-title">🍺 En Borrega Mecánica</span>
-                    <a href="https://www.instagram.com/borrega_mecanica" target="_blank" class="ig-link" onclick="event.stopPropagation()">
-                        Ver el lugar en IG ↗
-                    </a>
-                </label>
-
-                <label class="delivery-option" id="opt-manda2" onclick="setDelivery('manda2')">
-                    <input type="radio" name="delivery" value="manda2">
-                    <span class="opt-title">🛵 A Domicilio</span>
-                    <span class="opt-sub">Manda2 Express</span>
-                </label>
-
-            </div>
-
-            <input type="text" id="customer-name" class="name-input" placeholder="Escribe tu Nombre aquí..." autocomplete="off">
-
-            <div class="modal-actions">
-                <button class="btn-modal btn-cancel" onclick="closeReviewModal()">Volver</button>
-                <button class="btn-modal btn-confirm" onclick="finalizeOrder()">Enviar a Cocina</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- ESTADO GLOBAL ---
-        let pizzas = [{ id: 1, ingredients: [] }];
-        let currentPizzaIndex = 0;
-        let deliveryMethod = 'pickup'; 
-        
-        const BASE_PRICE = 160;
-        const EXTRA_PRICE = 10;
-        const PHONE_NUMBER = "523411224987"; 
-
-        // Inicializar UI
-        renderPizzaTabs();
-        updateUI();
-
-        // --- GESTIÓN DE PIZZAS ---
-        function addNewPizza() {
-            const newId = pizzas.length + 1;
-            pizzas.push({ id: newId, ingredients: [] });
-            currentPizzaIndex = pizzas.length - 1; 
-            renderPizzaTabs();
-            updateUI();
-        }
-
-        function switchPizza(index) {
-            currentPizzaIndex = index;
-            renderPizzaTabs();
-            updateUI();
-        }
-
-        function removeCurrentPizza() {
-            if (pizzas.length <= 1) return;
-            if (confirm("¿Seguro que deseas eliminar esta pizza?")) {
-                pizzas.splice(currentPizzaIndex, 1);
-                if (currentPizzaIndex >= pizzas.length) {
-                    currentPizzaIndex = pizzas.length - 1;
-                }
-                renderPizzaTabs();
-                updateUI();
-            }
-        }
-
-        function renderPizzaTabs() {
-            const container = document.getElementById('pizza-tabs');
-            let html = '';
-            
-            pizzas.forEach((pizza, index) => {
-                const activeClass = index === currentPizzaIndex ? 'active' : '';
-                html += `<button class="pizza-tab ${activeClass}" onclick="switchPizza(${index})">
-                            <svg style="width:14px; fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                            Pizza ${index + 1}
-                         </button>`;
-            });
-
-            html += `<button class="pizza-tab add-pizza-btn" onclick="addNewPizza()">+ Nueva</button>`;
-            container.innerHTML = html;
-
-            const deleteBtn = document.getElementById('delete-pizza-btn');
-            if (pizzas.length > 1) {
-                deleteBtn.classList.add('visible');
+        function renderShopStatus() {
+            const btn = document.getElementById('shop-status-btn');
+            const label = document.getElementById('status-label');
+            if (isShopOpen) {
+                btn.className = "shop-switch open";
+                label.innerText = "🟢 ABIERTO";
             } else {
-                deleteBtn.classList.remove('visible');
+                btn.className = "shop-switch closed";
+                label.innerText = "🔴 CERRADO";
             }
         }
 
-        // --- INGREDIENTES Y UI ---
-        function toggleIngredient(element, name) {
-            const currentIngredients = pizzas[currentPizzaIndex].ingredients;
-            const index = currentIngredients.indexOf(name);
-            
-            if (index > -1) {
-                currentIngredients.splice(index, 1);
+        onValue(ingredientsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                // Si la base de datos está vacía, la llenamos automáticamente
+                const initialData = {};
+                masterIngredients.forEach(ing => initialData[ing] = true);
+                set(ingredientsRef, initialData);
             } else {
-                currentIngredients.push(name);
+                renderIngredients(data);
             }
-            updateUI(); 
-        }
+        });
 
-        function updateUI() {
-            const allCards = document.querySelectorAll('.ing-card');
-            const currentIngredients = pizzas[currentPizzaIndex].ingredients;
-
-            allCards.forEach(card => {
-                const name = card.querySelector('.ing-name').innerText;
-                if (currentIngredients.includes(name)) {
-                    card.classList.add('selected');
-                } else {
-                    card.classList.remove('selected');
-                }
+        function renderIngredients(data) {
+            const list = document.getElementById('ing-list');
+            list.innerHTML = ''; 
+            Object.keys(data).sort().forEach(ingName => {
+                const isAvailable = data[ingName];
+                const div = document.createElement('div');
+                div.className = 'ing-row';
+                div.innerHTML = `
+                    <span class="ing-name" style="opacity: ${isAvailable ? 1 : 0.4}">${ingName}</span>
+                    <button class="toggle-btn ${isAvailable ? 'on' : 'off'}" onclick="toggleIng('${ingName}', ${isAvailable})">
+                        ${isAvailable ? 'DISPONIBLE' : 'AGOTADO'}
+                    </button>
+                `;
+                list.appendChild(div);
             });
-
-            const extraRow = document.getElementById('extra-row');
-            const extraLabel = document.getElementById('extra-label');
-            const extraCheck = document.getElementById('extra-check');
-            
-            let extraCountCurrent = Math.max(0, currentIngredients.length - 2);
-            
-            if (extraCountCurrent > 0) {
-                extraRow.classList.add('active');
-                extraCheck.innerText = "✓";
-                let s = extraCountCurrent > 1 ? "s" : "";
-                extraLabel.innerHTML = `<strong>En esta Pizza: ${extraCountCurrent} Extra${s} (+$${extraCountCurrent * EXTRA_PRICE})</strong>`;
-            } else {
-                extraRow.classList.remove('active');
-                extraCheck.innerText = "+";
-                extraLabel.innerHTML = `<strong>¿Ingredientes Extra? (+$10 c/u)</strong>`;
-            }
-
-            let grandTotal = 0;
-            pizzas.forEach(p => {
-                let extras = Math.max(0, p.ingredients.length - 2);
-                grandTotal += BASE_PRICE + (extras * EXTRA_PRICE);
-            });
-
-            document.getElementById('total-display').innerText = "$" + grandTotal;
         }
 
-        // --- LÓGICA DEL MODAL Y ENTREGA ---
-        function setDelivery(type) {
-            deliveryMethod = type;
-            // Limpiar clases
-            document.querySelectorAll('.delivery-option').forEach(el => el.classList.remove('active'));
-            // Activar selección
-            document.getElementById(`opt-${type}`).classList.add('active');
-        }
-
-        function openReviewModal() {
-            const modal = document.getElementById('review-modal');
-            const contentDiv = document.getElementById('modal-summary-content');
-            
-            let html = '';
-            let grandTotal = 0;
-
-            pizzas.forEach((p, index) => {
-                let baseIngs = p.ingredients.slice(0, 2); 
-                let extraIngs = p.ingredients.slice(2);
-                let extraCount = extraIngs.length;
-                let pizzaPrice = BASE_PRICE + (extraCount * EXTRA_PRICE);
-                grandTotal += pizzaPrice;
-
-                html += `<div class="pizza-summary-item">`;
-                html += `<strong>Pizza #${index + 1}</strong> <span style="float:right; font-size:0.9rem; color:#888;">$${pizzaPrice}</span><br>`;
-                
-                if (baseIngs.length > 0) {
-                    html += `<div style="margin-top:5px; color:#aaa; font-size:0.85rem;">Base: ${baseIngs.join(", ")}</div>`;
-                } else {
-                    html += `<div style="margin-top:5px; color:#aaa; font-size:0.85rem;">(Sin ingredientes)</div>`;
-                }
-
-                if (extraIngs.length > 0) {
-                    html += `<div style="margin-top:2px; color:var(--gold); font-size:0.85rem;">Extras: ${extraIngs.join(", ")}</div>`;
-                }
-                html += `</div>`;
-            });
-
-            html += `<div class="summary-total">Total Final: $${grandTotal}</div>`;
-            
-            contentDiv.innerHTML = html;
-            modal.classList.add('active');
-
-            setTimeout(() => document.getElementById('customer-name').focus(), 100);
-        }
-
-        function closeReviewModal() {
-            document.getElementById('review-modal').classList.remove('active');
-        }
-
-        function finalizeOrder() {
-            const nameInput = document.getElementById('customer-name');
-            const name = nameInput.value.trim();
-
-            if (!name) {
-                nameInput.classList.add('error');
-                setTimeout(() => nameInput.classList.remove('error'), 500);
-                nameInput.placeholder = "¡Necesitamos tu nombre!";
-                return;
-            }
-
-            let text = `Hola De La Monja, soy *${name}*. Quisiera hacer el siguiente pedido:\n\n`;
-            let grandTotal = 0;
-
-            pizzas.forEach((p, index) => {
-                let baseIngs = p.ingredients.slice(0, 2); 
-                let extraIngs = p.ingredients.slice(2);
-                let pizzaPrice = BASE_PRICE + (extraIngs.length * EXTRA_PRICE);
-                grandTotal += pizzaPrice;
-
-                text += `*🍕 PIZZA #${index + 1} ($${pizzaPrice})*\n`;
-                
-                if (baseIngs.length > 0) {
-                    text += `- Base: ${baseIngs.join(", ")}\n`;
-                } else {
-                    text += `- (Sin ingredientes)\n`;
-                }
-
-                if (extraIngs.length > 0) {
-                    text += `- Extras: ${extraIngs.join(", ")}\n`;
-                }
-                text += `\n`;
-            });
-
-            text += `*TOTAL A PAGAR: $${grandTotal}*\n`;
-            
-            // Agregar método de entrega al mensaje
-            if (deliveryMethod === 'brewery') {
-                text += `📍 *ENTREGA EN BORREGA MECÁNICA* 🍺`;
-            } else if (deliveryMethod === 'manda2') {
-                text += `🛵 *A DOMICILIO (Por Manda2 Express)*`;
-            } else {
-                text += `🥡 *PASO A RECOGER*`;
-            }
-
-            let url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
-            
-            closeReviewModal();
-        }
+        window.toggleIng = (name, currentState) => {
+            update(ref(db, 'ingredients'), { [name]: !currentState });
+        };
     </script>
-
 </body>
 </html>
