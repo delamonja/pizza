@@ -5,11 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cocina | De La Monja</title>
     <style>
-        :root { --bg: #111; --red: #ff4444; --green: #00C851; --text: #fff; }
+        :root { --bg: #111; --red: #ff4444; --green: #00C851; --text: #fff; --gold: #eec996; }
         body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
-        h1, h2 { text-align: center; color: #eec996; }
         
-        /* SWITCH GIGANTE */
+        /* LOGO ESTILO */
+        .admin-logo {
+            display: block;
+            margin: 0 auto 10px;
+            max-width: 120px;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 19, 0.4));
+        }
+
+        h1 { text-align: center; color: var(--gold); margin-top: 5px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px;}
+        h2 { text-align: center; color: #ccc; margin-top: 30px; border-bottom: 1px solid #333; padding-bottom: 10px;}
+        
         .shop-switch {
             background: #333; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px; border: 2px solid #555; cursor: pointer; transition: 0.3s;
         }
@@ -17,13 +26,12 @@
         .shop-switch.closed { background: rgba(255, 68, 68, 0.2); border-color: var(--red); }
         .status-text { font-size: 2rem; font-weight: bold; display: block; margin-bottom: 5px; }
 
-        /* LISTA */
-        .ing-control-list { display: grid; gap: 10px; }
-        .ing-row {
+        .control-list { display: grid; gap: 10px; }
+        .item-row {
             display: flex; justify-content: space-between; align-items: center;
             background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444;
         }
-        .ing-name { font-size: 1.1rem; }
+        .item-name { font-size: 1.1rem; }
         
         .toggle-btn {
             padding: 8px 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer;
@@ -34,6 +42,8 @@
 </head>
 <body>
 
+    <img src="logopizza.png" alt="De La Monja" class="admin-logo">
+
     <h1>👨‍🍳 CONTROL DE COCINA</h1>
 
     <div id="shop-status-btn" class="shop-switch" onclick="toggleShop()">
@@ -41,14 +51,16 @@
         <span style="font-size:0.9rem; color:#ccc;">(Clic para cambiar estado)</span>
     </div>
 
-    <h2>Inventario de Ingredientes</h2>
-    <div class="ing-control-list" id="ing-list"></div>
+    <h2>🍕 Ingredientes</h2>
+    <div class="control-list" id="ing-list"></div>
+
+    <h2>🌶️ Aderezos</h2>
+    <div class="control-list" id="dressing-list"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // TUS CREDENCIALES REALES (Extraídas de tus imágenes)
         const firebaseConfig = {
             apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
             authDomain: "delamonjapizza.firebaseapp.com",
@@ -63,18 +75,22 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Lista Maestra para inicializar la BD la primera vez
         const masterIngredients = [
             "Jamón de Pavo", "Peperoni", "Salami", "Tocino", "Salchicha Frankfurt",
             "Aceituna negra", "Champiñones", "Jitomate cherry", "Cebolla morada",
             "Pimientos encurtidos", "Compota de cebolla", "Arúgula", "Queso de cabra"
         ];
+        const masterDressings = [
+            "Chile quebrado", "Chile en aceite", "Ketchup picante", "Pesto", "Chimichurri"
+        ];
 
         const statusRef = ref(db, 'shopStatus');
         const ingredientsRef = ref(db, 'ingredients');
+        const dressingsRef = ref(db, 'dressings');
 
         let isShopOpen = false;
 
+        // --- ESTADO TIENDA ---
         onValue(statusRef, (snapshot) => {
             isShopOpen = snapshot.val();
             renderShopStatus();
@@ -96,28 +112,41 @@
             }
         }
 
+        // --- INGREDIENTES ---
         onValue(ingredientsRef, (snapshot) => {
             const data = snapshot.val();
             if (!data) {
-                // Si la base de datos está vacía, la llenamos automáticamente
                 const initialData = {};
                 masterIngredients.forEach(ing => initialData[ing] = true);
                 set(ingredientsRef, initialData);
             } else {
-                renderIngredients(data);
+                renderList(data, 'ing-list', 'ingredients');
             }
         });
 
-        function renderIngredients(data) {
-            const list = document.getElementById('ing-list');
+        // --- ADEREZOS ---
+        onValue(dressingsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                const initialData = {};
+                masterDressings.forEach(d => initialData[d] = true);
+                set(dressingsRef, initialData);
+            } else {
+                renderList(data, 'dressing-list', 'dressings');
+            }
+        });
+
+        // --- RENDERIZADO GENÉRICO ---
+        function renderList(data, elementId, dbNode) {
+            const list = document.getElementById(elementId);
             list.innerHTML = ''; 
-            Object.keys(data).sort().forEach(ingName => {
-                const isAvailable = data[ingName];
+            Object.keys(data).sort().forEach(itemName => {
+                const isAvailable = data[itemName];
                 const div = document.createElement('div');
-                div.className = 'ing-row';
+                div.className = 'item-row';
                 div.innerHTML = `
-                    <span class="ing-name" style="opacity: ${isAvailable ? 1 : 0.4}">${ingName}</span>
-                    <button class="toggle-btn ${isAvailable ? 'on' : 'off'}" onclick="toggleIng('${ingName}', ${isAvailable})">
+                    <span class="item-name" style="opacity: ${isAvailable ? 1 : 0.4}">${itemName}</span>
+                    <button class="toggle-btn ${isAvailable ? 'on' : 'off'}" onclick="toggleItem('${dbNode}', '${itemName}', ${isAvailable})">
                         ${isAvailable ? 'DISPONIBLE' : 'AGOTADO'}
                     </button>
                 `;
@@ -125,8 +154,8 @@
             });
         }
 
-        window.toggleIng = (name, currentState) => {
-            update(ref(db, 'ingredients'), { [name]: !currentState });
+        window.toggleItem = (dbNode, name, currentState) => {
+            update(ref(db, dbNode), { [name]: !currentState });
         };
     </script>
 </body>
