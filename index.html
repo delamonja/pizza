@@ -11,13 +11,37 @@
         }
         body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 120px; overflow-x: hidden; min-height: 100vh; }
         
+        /* BANNER DE "HORNO APAGADO" */
+        .closed-banner {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            background: linear-gradient(to right, #8E0E00, #1F1C18); /* Rojo oscuro a negro */
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1rem;
+            z-index: 1000;
+            transform: translateY(-100%); /* Oculto arriba */
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            border-bottom: 2px solid var(--brand-red);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .closed-banner.visible { transform: translateY(0); } /* Se muestra */
+
         .hero-section { position: relative; height: 55vh; min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 2rem; overflow: hidden; }
         .oven-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.6) blur(2px); animation: slowZoom 30s infinite alternate; }
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(15,15,15,1) 98%); z-index: 0; }
         .logo-img { position: relative; z-index: 10; max-width: 150px; width: 35%; filter: drop-shadow(0 0 25px rgba(255, 0, 19, 0.6)); margin-top: 1rem; animation: floatLogo 6s ease-in-out infinite; }
 
         .deal-wrapper { position: relative; z-index: 10; margin-top: -60px; padding: 0 15px; display: flex; justify-content: center; }
-        .hero-card { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-top: 4px solid var(--brand-red); border-radius: 20px; max-width: 500px; width: 100%; padding: 1.5rem; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUpCard 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        /* Transición de opacidad para cuando cierra */
+        .hero-card { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-top: 4px solid var(--brand-red); border-radius: 20px; max-width: 500px; width: 100%; padding: 1.5rem; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUpCard 1s cubic-bezier(0.2, 0.8, 0.2, 1); transition: opacity 0.5s;}
+        
+        /* Efecto visual extra cuando está cerrado: opacar la tarjeta */
+        .closed-state .hero-card { opacity: 0.6; filter: grayscale(0.5); }
+
         .price-tag { font-size: 3rem; font-weight: 800; line-height: 1; text-shadow: 0 0 20px var(--brand-red); margin: 10px 0; }
         .deal-title { color: var(--gold); font-size: 1.2rem; text-transform: uppercase; font-weight: bold; letter-spacing: 2px; }
         .deal-desc { font-size: 0.95rem; color: #ddd; margin: 1rem 0; line-height: 1.5; }
@@ -100,55 +124,59 @@
 </head>
 <body>
 
+    <div id="closed-banner" class="closed-banner">
+        🚫 EL HORNO SE ENCUENTRA APAGADO
+    </div>
+
     <div class="hero-section">
         <img src="oven.jpg" alt="Horno de Leña" class="oven-bg">
         <div class="hero-overlay"></div>
         <img src="logopizza.png" alt="De La Monja Pizza" class="logo-img">
     </div>
 
-    <div class="deal-wrapper">
-        <div class="hero-card">
-            <div class="deal-title">Arma tus Pizzas</div>
-            <div class="price-tag">$160</div>
-            <div class="deal-desc">
-                Base de <strong>Masa Madre con Romero</strong>.<br>
-                Incluye <strong>2 ingredientes base</strong>.<br>
-                <span style="font-size:0.85rem; color:var(--gold);">¡Agrega los extras que quieras! (+$10 c/u)</span>
+    <div id="main-content-wrapper">
+        <div class="deal-wrapper">
+            <div class="hero-card">
+                <div class="deal-title">Arma tus Pizzas</div>
+                <div class="price-tag">$160</div>
+                <div class="deal-desc">
+                    Base de <strong>Masa Madre con Romero</strong>.<br>
+                    Incluye <strong>2 ingredientes base</strong>.<br>
+                    <span style="font-size:0.85rem; color:var(--gold);">¡Agrega los extras que quieras! (+$10 c/u)</span>
+                </div>
+                <div class="specs-row">
+                    <div class="spec"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span>30 CM</span></div>
+                    <div class="spec"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>1-2 Pers.</span></div>
+                </div>
             </div>
-            <div class="specs-row">
-                <div class="spec"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span>30 CM</span></div>
-                <div class="spec"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span>1-2 Pers.</span></div>
+        </div>
+
+        <div class="container">
+            <div class="section-header" style="justify-content: space-between;">
+                <div class="section-title">Tu Pedido</div>
+                <button class="delete-pizza-btn" id="delete-pizza-btn" onclick="removeCurrentPizza()">
+                    <svg style="width:14px; fill:#ff4444;" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> Eliminar
+                </button>
+            </div>
+            <div class="pizza-tabs-container" id="pizza-tabs"></div>
+
+            <div class="section-header"><div class="line"></div><div class="section-title">Elige Ingredientes</div><div class="line"></div></div>
+            <div class="ing-grid" id="ingredients-list"><div style="text-align:center; color:#888;">Cargando menú...</div></div>
+
+            <div class="extras-row" id="extra-row">
+                <span id="extra-label"><strong>¿Ingredientes Extra? (+$10 c/u)</strong></span>
+                <div class="extra-price" id="extra-check">+</div>
+            </div>
+
+            <div class="section-header"><div class="line"></div><div class="section-title">Aderezos (Gratis)</div><div class="line"></div></div>
+            <div class="ing-grid" id="dressings-list"><div style="text-align:center; color:#888;">Cargando aderezos...</div></div>
+
+            <div class="price-calculator">
+                <div class="total-label">Total a Pagar</div>
+                <div class="total-amount" id="total-display">$160</div>
             </div>
         </div>
-    </div>
-
-    <div class="container">
-        <div class="section-header" style="justify-content: space-between;">
-            <div class="section-title">Tu Pedido</div>
-            <button class="delete-pizza-btn" id="delete-pizza-btn" onclick="removeCurrentPizza()">
-                <svg style="width:14px; fill:#ff4444;" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> Eliminar
-            </button>
-        </div>
-        <div class="pizza-tabs-container" id="pizza-tabs"></div>
-
-        <div class="section-header"><div class="line"></div><div class="section-title">Elige Ingredientes</div><div class="line"></div></div>
-        <div class="ing-grid" id="ingredients-list"><div style="text-align:center; color:#888;">Cargando menú...</div></div>
-
-        <div class="extras-row" id="extra-row">
-            <span id="extra-label"><strong>¿Ingredientes Extra? (+$10 c/u)</strong></span>
-            <div class="extra-price" id="extra-check">+</div>
-        </div>
-
-        <div class="section-header"><div class="line"></div><div class="section-title">Aderezos (Gratis)</div><div class="line"></div></div>
-        <div class="ing-grid" id="dressings-list"></div>
-
-        <div class="price-calculator">
-            <div class="total-label">Total a Pagar</div>
-            <div class="total-amount" id="total-display">$160</div>
-        </div>
-    </div>
-
-    <div class="footer">
+    </div> <div class="footer">
         <div>Hidalgo 135, Centro, Tapalpa, Jal.</div>
         <a href="https://www.google.com/maps/search/?api=1&query=Hidalgo+135+Tapalpa+Jalisco" class="map-btn" target="_blank">Ver Mapa</a>
     </div>
@@ -209,7 +237,6 @@
         const EXTRA_PRICE = 10;
         const PHONE_NUMBER = "523411224987"; 
 
-        // LISTA DE ADEREZOS
         const DRESSINGS_LIST = [
             "Chile quebrado", "Chile en aceite", "Ketchup picante", "Pesto", "Chimichurri"
         ];
@@ -223,6 +250,11 @@
         const ingredientsRef = ref(db, 'ingredients');
         onValue(ingredientsRef, (snapshot) => {
             renderIngredientsGrid(snapshot.val());
+        });
+
+        const dressingsRef = ref(db, 'dressings');
+        onValue(dressingsRef, (snapshot) => {
+            renderDressingsGrid(snapshot.val());
         });
 
         function renderIngredientsGrid(inventory) {
@@ -240,41 +272,45 @@
             if(window.updateUI) window.updateUI(); 
         }
 
-        // FUNCIÓN DE ADEREZOS CORREGIDA (Exportada al window)
-        window.renderDressingsGrid = () => {
+        function renderDressingsGrid(inventory) {
             const grid = document.getElementById('dressings-list');
+            if(!inventory) return;
             grid.innerHTML = '';
-            
-            DRESSINGS_LIST.forEach(dressName => {
+            Object.keys(inventory).sort().forEach(dressName => {
+                const isAvailable = inventory[dressName];
                 const div = document.createElement('div');
-                div.className = 'ing-card dressing-card'; 
-                div.onclick = () => window.toggleDressing(div, dressName);
-                
-                div.innerHTML = `
-                    <div class="ing-dot"></div>
-                    <div class="ing-name">${dressName}</div>
-                `;
+                div.className = `ing-card dressing-card ${isAvailable ? '' : 'disabled'}`;
+                if(isAvailable) { div.onclick = () => window.toggleDressing(div, dressName); }
+                div.innerHTML = `<div class="ing-dot"></div><div class="ing-name">${dressName} ${isAvailable ? '' : '<span style="font-size:0.7em; color:#ff4444; display:block;">(Agotado)</span>'}</div>`;
                 grid.appendChild(div);
             });
+            if(window.updateUI) window.updateUI();
         }
 
         function updateFabButton() {
             const fab = document.getElementById('main-fab');
             const text = document.getElementById('fab-text');
+            const banner = document.getElementById('closed-banner');
+            const wrapper = document.getElementById('main-content-wrapper');
+
             if (isShopOpen) {
                 fab.classList.remove('closed-mode');
                 fab.style.background = "#25D366";
                 text.innerText = "Revisar y Pedir";
+                banner.classList.remove('visible');
+                wrapper.classList.remove('closed-state');
             } else {
                 fab.classList.add('closed-mode');
                 fab.style.background = "#444";
                 text.innerText = "Consultar Horario";
+                banner.classList.add('visible');
+                wrapper.classList.add('closed-state');
             }
         }
 
         window.handleMainAction = () => {
             if (isShopOpen) { window.openReviewModal(); } 
-            else { window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent("Hola De La Monja, veo que están cerrados en la app. ¿A qué hora abren?")}`, '_blank'); }
+            else { window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent("Hola De La Monja, veo que el horno está apagado. ¿A qué hora abren?")}`, '_blank'); }
         };
 
         window.addNewPizza = () => {
@@ -337,8 +373,11 @@
 
             const currentDressings = pizzas[currentPizzaIndex].dressings;
             document.querySelectorAll('#dressings-list .dressing-card').forEach(card => {
-                const name = card.querySelector('.ing-name').innerText;
-                if (currentDressings.includes(name)) card.classList.add('selected'); else card.classList.remove('selected');
+                const nameEl = card.querySelector('.ing-name');
+                if(nameEl) {
+                    const name = nameEl.childNodes[0].nodeValue.trim();
+                    if (currentDressings.includes(name)) card.classList.add('selected'); else card.classList.remove('selected');
+                }
             });
 
             const extraRow = document.getElementById('extra-row');
@@ -378,7 +417,7 @@
                 let price = BASE_PRICE + (extraIngs.length * EXTRA_PRICE);
                 grandTotal += price;
                 html += `<div class="pizza-summary-item"><strong>Pizza #${index + 1}</strong> <span style="float:right; color:#888;">$${price}</span><br>`;
-                html += `<div style="font-size:0.85em; color:#aaa;">Base: ${p.ingredients.slice(0, 2).join(", ") || "(Sin ingredientes)"}</div>`;
+                html += `<div style="font-size:0.85em; color:#aaa;">Ingredientes: ${p.ingredients.slice(0, 2).join(", ") || "(Sin ingredientes)"}</div>`;
                 if (extraIngs.length > 0) html += `<div style="font-size:0.85em; color:var(--gold);">Extras: ${extraIngs.join(", ")}</div>`;
                 
                 if (p.dressings.length > 0) {
@@ -413,7 +452,7 @@
                 let extras = p.ingredients.slice(2);
                 let price = BASE_PRICE + (extras.length * EXTRA_PRICE);
                 grandTotal += price;
-                text += `*🍕 PIZZA #${index + 1} ($${price})*\n- Base: ${p.ingredients.slice(0, 2).join(", ") || "Nada"}\n`;
+                text += `*🍕 PIZZA #${index + 1} ($${price})*\n- Ingredientes: ${p.ingredients.slice(0, 2).join(", ") || "Nada"}\n`;
                 if (extras.length > 0) text += `- Extras: ${extras.join(", ")}\n`;
                 if (p.dressings.length > 0) text += `- Aderezos: ${p.dressings.join(", ")}\n`;
                 text += `\n`;
@@ -428,9 +467,8 @@
             window.closeReviewModal();
         }
 
-        // Init UI
         window.renderPizzaTabs();
-        window.renderDressingsGrid(); // AHORA SÍ SE EJECUTA
+        window.renderDressingsGrid(); 
         window.updateUI();
     </script>
 </body>
