@@ -11,35 +11,71 @@
         }
         body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 120px; overflow-x: hidden; min-height: 100vh; }
         
-        /* BANNER DE "HORNO APAGADO" */
+        /* --- INTRO SCREEN (CON LENIA.JPG) --- */
+        .intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            /* Fondo Lenia con capa oscura para que se lea el texto */
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85)), url('lenia.jpg') no-repeat center center;
+            background-size: cover;
+            z-index: 5000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 30px; box-sizing: border-box;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .intro-screen.hidden { transform: translateY(-100%); }
+        
+        /* Animación suave para la imagen de fondo del intro */
+        @keyframes subtleBurn { from { background-size: 100%; } to { background-size: 110%; } }
+        .intro-screen { animation: subtleBurn 30s infinite alternate; }
+
+        .intro-logo { max-width: 260px; margin-bottom: 20px; filter: drop-shadow(0 0 30px rgba(255, 0, 19, 0.3)); animation: floatLogo 6s ease-in-out infinite; }
+        
+        .intro-text { 
+            font-size: 1.1rem; color: #e0e0e0; line-height: 1.6; max-width: 450px; 
+            margin-bottom: 40px; font-weight: 300; letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
+        .intro-text strong { color: var(--gold); font-weight: normal; }
+
+        .intro-btn {
+            background: transparent; color: var(--brand-red); border: 2px solid var(--brand-red);
+            padding: 15px 40px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;
+            font-weight: bold; cursor: pointer; transition: 0.3s; border-radius: 50px;
+            margin-bottom: 30px; box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        .intro-btn:hover { background: var(--brand-red); color: white; box-shadow: 0 0 25px rgba(255,0,19,0.6); }
+
+        .intro-map-link {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: var(--gold); text-decoration: none; font-size: 0.9rem; opacity: 0.8; transition: 0.3s;
+            border-bottom: 1px dotted transparent; padding-bottom: 2px;
+        }
+        .intro-map-link:hover { opacity: 1; border-bottom-color: var(--gold); }
+        .intro-map-link svg { width: 18px; fill: var(--gold); }
+
+        /* --- BANNER --- */
         .closed-banner {
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            background: linear-gradient(to right, #8E0E00, #1F1C18); /* Rojo oscuro a negro */
-            color: #fff;
-            text-align: center;
-            padding: 15px;
-            font-weight: bold;
-            font-size: 1rem;
-            z-index: 1000;
-            transform: translateY(-100%); /* Oculto arriba */
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            border-bottom: 2px solid var(--brand-red);
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(to right, #8E0E00, #1F1C18);
+            color: #fff; text-align: center; padding: 15px; font-weight: bold; font-size: 1rem;
+            z-index: 1000; transform: translateY(-100%); transition: transform 0.4s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8); border-bottom: 2px solid var(--brand-red);
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .closed-banner.visible { transform: translateY(0); } /* Se muestra */
+        .closed-banner.visible { transform: translateY(0); }
 
-        .hero-section { position: relative; height: 55vh; min-height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 2rem; overflow: hidden; }
+        /* --- HERO (CON OVEN.JPG) --- */
+        .hero-section { position: relative; height: 50vh; min-height: 350px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 1.5rem; overflow: hidden; }
+        
         .oven-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.6) blur(2px); animation: slowZoom 30s infinite alternate; }
-        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(15,15,15,1) 98%); z-index: 0; }
-        .logo-img { position: relative; z-index: 10; max-width: 150px; width: 35%; filter: drop-shadow(0 0 25px rgba(255, 0, 19, 0.6)); margin-top: 1rem; animation: floatLogo 6s ease-in-out infinite; }
+        
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(15,15,15,1) 98%); z-index: 0; }
+        
+        .logo-img { position: relative; z-index: 10; max-width: 100px; width: 25%; filter: drop-shadow(0 0 20px rgba(255, 0, 19, 0.5)); margin-top: 0.5rem; opacity: 0.9; }
 
         .deal-wrapper { position: relative; z-index: 10; margin-top: -60px; padding: 0 15px; display: flex; justify-content: center; }
-        /* Transición de opacidad para cuando cierra */
         .hero-card { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-top: 4px solid var(--brand-red); border-radius: 20px; max-width: 500px; width: 100%; padding: 1.5rem; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUpCard 1s cubic-bezier(0.2, 0.8, 0.2, 1); transition: opacity 0.5s;}
-        
-        /* Efecto visual extra cuando está cerrado: opacar la tarjeta */
         .closed-state .hero-card { opacity: 0.6; filter: grayscale(0.5); }
 
         .price-tag { font-size: 3rem; font-weight: 800; line-height: 1; text-shadow: 0 0 20px var(--brand-red); margin: 10px 0; }
@@ -70,7 +106,6 @@
         .ing-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; }
         .ing-name { font-weight: 500; font-size: 0.95rem; }
 
-        /* ADEREZOS ESTILO */
         .dressing-card { border-color: rgba(238, 201, 150, 0.3); } 
         .dressing-card.selected { background: rgba(238, 201, 150, 0.15); border-color: var(--gold); }
         .dressing-card.selected .ing-dot { background: var(--gold); box-shadow: 0 0 5px var(--gold); }
@@ -119,10 +154,28 @@
         @keyframes slideUpCard { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes pulsePrice { from { border-color: rgba(255,255,255,0.1); } to { border-color: rgba(238, 201, 150, 0.4); } }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
-        @media (max-width: 600px) { .logo-img { max-width: 130px; } .hero-section { height: 50vh; } .price-tag { font-size: 2.5rem; } }
+        @media (max-width: 600px) { .logo-img { max-width: 110px; } .hero-section { height: 50vh; } .price-tag { font-size: 2.5rem; } }
     </style>
 </head>
 <body>
+
+    <div id="intro-screen" class="intro-screen">
+        <div class="intro-content">
+            <img src="logopizza.png" class="intro-logo" alt="De La Monja">
+            
+            <p class="intro-text">
+                Panadería, Pizzería y Cocina artesanal en el corazón de Tapalpa.<br><br>
+                Cada pizza se elabora con <strong>masa madre</strong> de cultivo propio, ingredientes frescos y el toque inigualable de nuestro <strong>horno de leña</strong>.
+            </p>
+            
+            <button class="intro-btn" onclick="enterSite()">Ordenar Ahora</button>
+
+            <a href="https://www.google.com/maps/search/?api=1&query=De+La+Monja+Tapalpa" target="_blank" class="intro-map-link">
+                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                Ubicación
+            </a>
+        </div>
+    </div>
 
     <div id="closed-banner" class="closed-banner">
         🚫 EL HORNO SE ENCUENTRA APAGADO
@@ -176,9 +229,11 @@
                 <div class="total-amount" id="total-display">$160</div>
             </div>
         </div>
-    </div> <div class="footer">
+    </div>
+
+    <div class="footer">
         <div>Hidalgo 135, Centro, Tapalpa, Jal.</div>
-        <a href="https://www.google.com/maps/search/?api=1&query=Hidalgo+135+Tapalpa+Jalisco" class="map-btn" target="_blank">Ver Mapa</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=De+La+Monja+Tapalpa" class="map-btn" target="_blank">Ver Mapa</a>
     </div>
 
     <div class="fab" id="main-fab" onclick="handleMainAction()">
@@ -193,11 +248,16 @@
 
             <div class="delivery-options">
                 <label class="delivery-option active" id="opt-pickup" onclick="setDelivery('pickup')">
-                    <span class="opt-title">🥡 Recoger</span><span class="opt-sub">Local</span>
+                    <span class="opt-title">🥡 Recoger</span><span class="opt-sub">En la tienda</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=De+La+Monja+Tapalpa" target="_blank" class="ig-link" onclick="event.stopPropagation()">Ver Mapa ↗</a>
                 </label>
                 <label class="delivery-option" id="opt-brewery" onclick="setDelivery('brewery')">
                     <span class="opt-title">🍺 Borrega</span>
                     <a href="https://www.instagram.com/borrega_mecanica" target="_blank" class="ig-link" onclick="event.stopPropagation()">Ver lugar ↗</a>
+                </label>
+                <label class="delivery-option" id="opt-barra27" onclick="setDelivery('barra27')">
+                    <span class="opt-title">🍸 Barra 27</span>
+                    <a href="https://www.facebook.com/p/Barra-27-100063624637646/" target="_blank" class="ig-link" onclick="event.stopPropagation()">Ver Facebook ↗</a>
                 </label>
                 <label class="delivery-option" id="opt-manda2" onclick="setDelivery('manda2')">
                     <span class="opt-title">🛵 Manda2</span><span class="opt-sub">A Domicilio</span>
@@ -237,10 +297,6 @@
         const EXTRA_PRICE = 10;
         const PHONE_NUMBER = "523411224987"; 
 
-        const DRESSINGS_LIST = [
-            "Chile quebrado", "Chile en aceite", "Ketchup picante", "Pesto", "Chimichurri"
-        ];
-
         const statusRef = ref(db, 'shopStatus');
         onValue(statusRef, (snapshot) => {
             isShopOpen = snapshot.val();
@@ -262,11 +318,12 @@
             if(!inventory) return;
             grid.innerHTML = '';
             Object.keys(inventory).sort().forEach(ingName => {
+                let displayName = ingName === "Salchicha Frankfurt" ? "Salchicha" : ingName;
                 const isAvailable = inventory[ingName];
                 const div = document.createElement('div');
                 div.className = `ing-card ${isAvailable ? '' : 'disabled'}`;
-                if(isAvailable) { div.onclick = () => window.toggleIngredient(div, ingName); }
-                div.innerHTML = `<div class="ing-dot"></div><div class="ing-name">${ingName} ${isAvailable ? '' : '<span style="font-size:0.7em; color:#ff4444; display:block;">(Agotado)</span>'}</div>`;
+                if(isAvailable) { div.onclick = () => window.toggleIngredient(div, displayName); } // Usa displayName
+                div.innerHTML = `<div class="ing-dot"></div><div class="ing-name">${displayName} ${isAvailable ? '' : '<span style="font-size:0.7em; color:#ff4444; display:block;">(Agotado)</span>'}</div>`;
                 grid.appendChild(div);
             });
             if(window.updateUI) window.updateUI(); 
@@ -286,6 +343,10 @@
             });
             if(window.updateUI) window.updateUI();
         }
+
+        window.enterSite = () => {
+            document.getElementById('intro-screen').classList.add('hidden');
+        };
 
         function updateFabButton() {
             const fab = document.getElementById('main-fab');
@@ -373,11 +434,8 @@
 
             const currentDressings = pizzas[currentPizzaIndex].dressings;
             document.querySelectorAll('#dressings-list .dressing-card').forEach(card => {
-                const nameEl = card.querySelector('.ing-name');
-                if(nameEl) {
-                    const name = nameEl.childNodes[0].nodeValue.trim();
-                    if (currentDressings.includes(name)) card.classList.add('selected'); else card.classList.remove('selected');
-                }
+                const name = card.querySelector('.ing-name').innerText;
+                if (currentDressings.includes(name)) card.classList.add('selected'); else card.classList.remove('selected');
             });
 
             const extraRow = document.getElementById('extra-row');
@@ -460,8 +518,9 @@
 
             text += `*TOTAL: $${grandTotal}*\n`;
             if (deliveryMethod === 'brewery') text += `📍 *ENTREGA EN BORREGA MECÁNICA* 🍺`;
+            else if (deliveryMethod === 'barra27') text += `📍 *ENTREGA EN BARRA 27* 🍸`;
             else if (deliveryMethod === 'manda2') text += `🛵 *A DOMICILIO (Manda2 Express)*`;
-            else text += `🥡 *PASO A RECOGER*`;
+            else text += `🥡 *PASO A RECOGER (En tienda)*`;
 
             window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
             window.closeReviewModal();
