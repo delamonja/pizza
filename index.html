@@ -9,105 +9,55 @@
         :root {
             --bg-dark: #0f0f0f; --brand-red: #ff0013; --gold: #eec996; --text-white: #ffffff; --glass: rgba(20, 20, 20, 0.95);
         }
-        
-        /* BLOQUEO DE SCROLL */
         body.no-scroll { overflow: hidden; position: fixed; width: 100%; height: 100%; }
-
         body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: var(--bg-dark); color: var(--text-white); padding-bottom: 120px; overflow-x: hidden; min-height: 100vh; }
         
-        /* --- INTRO SCREEN ARQUITECTURA ROBUSTA --- */
+        /* --- INTRO SCREEN --- */
         .intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 5000;
-            overflow: hidden;
+            z-index: 5000; overflow: hidden;
             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
             background: #000;
         }
-
-        /* CAPA 1: IMAGEN DE FONDO (LENIA) */
         .intro-bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('lenia.jpg') no-repeat center center;
-            background-size: cover;
-            /* Animación suave de "respiración" (Zoom lento) */
-            animation: cinematicPulse 25s infinite alternate ease-in-out;
-            z-index: 1;
+            /* El background-image se setea via JS */
+            background-repeat: no-repeat; background-position: center center; background-size: cover;
+            animation: cinematicPulse 25s infinite alternate ease-in-out; z-index: 1;
         }
-
-        /* CAPA 2: FILTRO OSCURO (CORREGIDO PARA MÁS CONTRASTE) */
         .intro-overlay-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            /* Degradado mucho más oscuro para separar el logo del fondo */
-            background: linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.95));
-            z-index: 2;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.65), rgba(0,0,0,0.95)); z-index: 2;
         }
-
-        /* CAPA 3: CONTENIDO (TEXTO Y LOGO) */
         .intro-content {
-            position: relative; z-index: 3;
-            width: 100%; height: 100%;
+            position: relative; z-index: 3; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px; box-sizing: border-box;
         }
-
-        @keyframes cinematicPulse { 
-            0% { transform: scale(1.0); } 
-            100% { transform: scale(1.15); } 
-        }
-
+        @keyframes cinematicPulse { 0% { transform: scale(1.0); } 100% { transform: scale(1.15); } }
         .intro-screen.hidden { transform: translateY(-100%); pointer-events: none; }
         
-        /* El drop-shadow ahora resaltará más sobre el fondo oscuro */
         .intro-logo { max-width: 240px; width: 60%; margin-bottom: 20px; filter: drop-shadow(0 0 30px rgba(255, 0, 19, 0.5)); animation: floatLogo 6s ease-in-out infinite; }
-        
-        .intro-text { 
-            font-size: 1.1rem; color: #e0e0e0; line-height: 1.5; max-width: 450px; 
-            margin-bottom: 35px; font-weight: 300; letter-spacing: 0.5px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.9); padding: 0 10px;
-        }
+        .intro-text { font-size: 1.1rem; color: #e0e0e0; line-height: 1.5; max-width: 450px; margin-bottom: 35px; font-weight: 300; letter-spacing: 0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.9); padding: 0 10px; }
         .intro-text strong { color: var(--gold); font-weight: normal; }
-
-        .intro-btn {
-            background: transparent; color: var(--brand-red); border: 2px solid var(--brand-red);
-            padding: 15px 45px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;
-            font-weight: bold; cursor: pointer; transition: 0.3s; border-radius: 50px;
-            margin-bottom: 25px; box-shadow: 0 0 20px rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-        }
+        .intro-btn { background: transparent; color: var(--brand-red); border: 2px solid var(--brand-red); padding: 15px 45px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; cursor: pointer; transition: 0.3s; border-radius: 50px; margin-bottom: 25px; box-shadow: 0 0 20px rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
         .intro-btn:hover { background: var(--brand-red); color: white; box-shadow: 0 0 30px rgba(255,0,19,0.7); }
-
-        .intro-map-link {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            color: var(--gold); text-decoration: none; font-size: 0.9rem; opacity: 0.8; transition: 0.3s;
-            border-bottom: 1px dotted transparent; padding-bottom: 2px;
-        }
+        .intro-map-link { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--gold); text-decoration: none; font-size: 0.9rem; opacity: 0.8; transition: 0.3s; border-bottom: 1px dotted transparent; padding-bottom: 2px; }
         .intro-map-link:hover { opacity: 1; border-bottom-color: var(--gold); }
         .intro-map-link svg { width: 18px; fill: var(--gold); }
 
-        /* --- BANNER --- */
-        .closed-banner {
-            position: fixed; top: 0; left: 0; width: 100%;
-            background: linear-gradient(to right, #8E0E00, #1F1C18);
-            color: #fff; text-align: center; padding: 15px; font-weight: bold; font-size: 1rem;
-            z-index: 1000; transform: translateY(-100%); transition: transform 0.4s ease;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8); border-bottom: 2px solid var(--brand-red);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        /* --- STYLES RESTO --- */
+        .closed-banner { position: fixed; top: 0; left: 0; width: 100%; background: linear-gradient(to right, #8E0E00, #1F1C18); color: #fff; text-align: center; padding: 15px; font-weight: bold; font-size: 1rem; z-index: 1000; transform: translateY(-100%); transition: transform 0.4s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.8); border-bottom: 2px solid var(--brand-red); display: flex; align-items: center; justify-content: center; gap: 10px; }
         .closed-banner.visible { transform: translateY(0); }
-
-        /* --- HERO --- */
+        
         .hero-section { position: relative; height: 42vh; min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 2rem; overflow: hidden; }
-        
         .oven-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.6) blur(2px); animation: slowZoom 30s infinite alternate; }
-        
         .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(15,15,15,1) 98%); z-index: 0; }
-        
         .logo-img { position: relative; z-index: 10; max-width: 160px; width: 40%; filter: drop-shadow(0 0 25px rgba(255, 0, 19, 0.6)); margin-top: 0.5rem; opacity: 0.95; }
 
         .deal-wrapper { position: relative; z-index: 10; margin-top: -110px; padding: 0 15px; display: flex; justify-content: center; }
         .hero-card { background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-top: 4px solid var(--brand-red); border-radius: 20px; max-width: 500px; width: 100%; padding: 1.5rem; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: slideUpCard 1s cubic-bezier(0.2, 0.8, 0.2, 1); transition: opacity 0.5s;}
         .closed-state .hero-card { opacity: 0.6; filter: grayscale(0.5); }
-
         .price-tag { font-size: 3rem; font-weight: 800; line-height: 1; text-shadow: 0 0 20px var(--brand-red); margin: 10px 0; }
         .deal-title { color: var(--gold); font-size: 1.2rem; text-transform: uppercase; font-weight: bold; letter-spacing: 2px; }
         .deal-desc { font-size: 0.95rem; color: #ddd; margin: 1rem 0; line-height: 1.5; }
@@ -135,6 +85,13 @@
         .ing-card.disabled .ing-dot { background: #555; }
         .ing-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; }
         .ing-name { font-weight: 500; font-size: 0.95rem; }
+
+        /* Estilo para Especiales */
+        .special-card { border: 1px solid var(--gold); background: rgba(238, 201, 150, 0.08); }
+        .special-card .ing-name { color: var(--gold); }
+        .special-card.selected { background: var(--gold); border-color: var(--gold); }
+        .special-card.selected .ing-name { color: #000; font-weight: bold; }
+        .special-card.selected .ing-dot { background: #000; }
 
         .dressing-card { border-color: rgba(238, 201, 150, 0.3); } 
         .dressing-card.selected { background: rgba(238, 201, 150, 0.15); border-color: var(--gold); }
@@ -187,19 +144,18 @@
         @media (max-width: 600px) { .logo-img { max-width: 140px; } .hero-section { height: 40vh; } .price-tag { font-size: 2.5rem; } }
     </style>
 </head>
-<body class="no-scroll"> <div id="intro-screen" class="intro-screen">
+<body class="no-scroll">
+
+    <div id="intro-screen" class="intro-screen">
         <div class="intro-bg-layer"></div>
         <div class="intro-overlay-layer"></div>
         <div class="intro-content">
             <img src="logopizza.png" class="intro-logo" alt="De La Monja">
-            
             <p class="intro-text">
                 Panadería, Pizzería y Cocina artesanal en el corazón de Tapalpa.<br><br>
                 Cada pizza se elabora con <strong>masa madre</strong> de cultivo propio, ingredientes frescos y el toque inigualable de nuestro <strong>horno de leña</strong>.
             </p>
-            
             <button class="intro-btn" onclick="enterSite()">Ordenar Ahora</button>
-
             <a href="https://www.google.com/maps/search/?api=1&query=De+La+Monja+Tapalpa" target="_blank" class="intro-map-link">
                 <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                 Ubicación
@@ -245,6 +201,11 @@
 
             <div class="section-header"><div class="line"></div><div class="section-title">Elige Ingredientes</div><div class="line"></div></div>
             <div class="ing-grid" id="ingredients-list"><div style="text-align:center; color:#888;">Cargando menú...</div></div>
+
+            <div id="special-section" style="display:none;">
+                <div class="section-header"><div class="line"></div><div class="section-title" style="color:var(--gold);">✨ Especiales de Temporada</div><div class="line"></div></div>
+                <div class="ing-grid" id="special-list"></div>
+            </div>
 
             <div class="extras-row" id="extra-row">
                 <span id="extra-label"><strong>¿Ingredientes Extra? (+$10 c/u)</strong></span>
@@ -327,20 +288,40 @@
         const EXTRA_PRICE = 10;
         const PHONE_NUMBER = "523411224987"; 
 
+        // SELECCIÓN RANDOM DE FONDO INTRO
+        const introBgs = ['leniaa.jpg', 'leniab.jpg'];
+        const randomBg = introBgs[Math.floor(Math.random() * introBgs.length)];
+        document.querySelector('.intro-bg-layer').style.backgroundImage = `url('${randomBg}')`;
+
         const statusRef = ref(db, 'shopStatus');
-        onValue(statusRef, (snapshot) => {
-            isShopOpen = snapshot.val();
-            updateFabButton();
-        });
-
         const ingredientsRef = ref(db, 'ingredients');
-        onValue(ingredientsRef, (snapshot) => {
-            renderIngredientsGrid(snapshot.val());
-        });
-
         const dressingsRef = ref(db, 'dressings');
-        onValue(dressingsRef, (snapshot) => {
-            renderDressingsGrid(snapshot.val());
+        const specialsRef = ref(db, 'specials'); // NEW
+
+        onValue(statusRef, (snapshot) => { isShopOpen = snapshot.val(); updateFabButton(); });
+        onValue(ingredientsRef, (snapshot) => { renderIngredientsGrid(snapshot.val()); });
+        onValue(dressingsRef, (snapshot) => { renderDressingsGrid(snapshot.val()); });
+        
+        // --- ESCUCHAR ESPECIALES ---
+        onValue(specialsRef, (snapshot) => {
+            const data = snapshot.val();
+            const section = document.getElementById('special-section');
+            const grid = document.getElementById('special-list');
+            
+            if (data && Object.keys(data).length > 0) {
+                section.style.display = 'block'; // Mostrar sección
+                grid.innerHTML = '';
+                Object.keys(data).forEach(name => {
+                    const div = document.createElement('div');
+                    div.className = 'ing-card special-card';
+                    div.onclick = () => window.toggleIngredient(div, name);
+                    div.innerHTML = `<div class="ing-dot"></div><div class="ing-name">${name}</div>`;
+                    grid.appendChild(div);
+                });
+            } else {
+                section.style.display = 'none'; // Ocultar si no hay
+            }
+            if(window.updateUI) window.updateUI();
         });
 
         function renderIngredientsGrid(inventory) {
@@ -455,6 +436,8 @@
 
         window.updateUI = () => {
             const currentIngredients = pizzas[currentPizzaIndex].ingredients;
+            
+            // Ingredientes regulares
             document.querySelectorAll('#ingredients-list .ing-card').forEach(card => {
                 const nameEl = card.querySelector('.ing-name');
                 if(nameEl) {
@@ -463,6 +446,13 @@
                 }
             });
 
+            // Especiales
+            document.querySelectorAll('#special-list .special-card').forEach(card => {
+                const name = card.querySelector('.ing-name').innerText;
+                if (currentIngredients.includes(name)) card.classList.add('selected'); else card.classList.remove('selected');
+            });
+
+            // Aderezos
             const currentDressings = pizzas[currentPizzaIndex].dressings;
             document.querySelectorAll('#dressings-list .dressing-card').forEach(card => {
                 const name = card.querySelector('.ing-name').innerText;
