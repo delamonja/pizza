@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cocina | De La Monja</title>
     <style>
-        :root { --bg: #111; --red: #ff4444; --green: #00C851; --text: #fff; --gold: #eec996; }
+        :root { --bg: #111; --red: #ff0013; --green: #00C851; --text: #fff; --gold: #eec996; }
         body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
         
         .admin-logo { display: block; margin: 0 auto 10px; max-width: 120px; filter: drop-shadow(0 0 10px rgba(255, 0, 19, 0.4)); }
         h1 { text-align: center; color: var(--gold); margin-top: 5px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px;}
-        h2 { text-align: center; color: #ccc; margin-top: 30px; border-bottom: 1px solid #333; padding-bottom: 10px;}
+        h2 { text-align: center; color: #ccc; margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 1.2rem;}
         
         .shop-switch { background: #333; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px; border: 2px solid #555; cursor: pointer; transition: 0.3s; }
         .shop-switch.open { background: rgba(0, 200, 81, 0.2); border-color: var(--green); }
@@ -20,26 +20,43 @@
         .control-list { display: grid; gap: 10px; }
         .item-row { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; }
         .item-name { font-size: 1.1rem; }
+        
         .toggle-btn { padding: 8px 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; }
         .toggle-btn.on { background: var(--green); color: white; }
         .toggle-btn.off { background: var(--red); color: white; opacity: 0.6; }
+        .delete-btn { background: transparent; border: 1px solid #555; color: #ff4444; margin-left: 10px; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+
+        /* INPUT AREA FOR SPECIALS */
+        .add-special-box { display: flex; gap: 10px; margin-bottom: 15px; }
+        .special-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 1rem; }
+        .add-btn { background: var(--gold); color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
     <img src="logopizza.png" alt="De La Monja" class="admin-logo">
     <h1>👨‍🍳 CONTROL DE COCINA</h1>
+    
     <div id="shop-status-btn" class="shop-switch" onclick="toggleShop()">
         <span class="status-text" id="status-label">Conectando...</span>
         <span style="font-size:0.9rem; color:#ccc;">(Clic para cambiar estado)</span>
     </div>
-    <h2>🍕 Ingredientes</h2>
+
+    <h2 style="color:var(--gold);">✨ Especiales (Temporada)</h2>
+    <div class="add-special-box">
+        <input type="text" id="new-special-name" class="special-input" placeholder="Ej: Higos, Queso Azul...">
+        <button class="add-btn" onclick="addNewSpecial()">AGREGAR</button>
+    </div>
+    <div class="control-list" id="special-list"></div>
+
+    <h2>🍕 Ingredientes Base</h2>
     <div class="control-list" id="ing-list"></div>
+    
     <h2>🌶️ Aderezos</h2>
     <div class="control-list" id="dressing-list"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
@@ -56,7 +73,7 @@
         const db = getDatabase(app);
 
         const masterIngredients = [
-            "Jamón de Pavo", "Peperoni", "Salami", "Tocino", "Salchicha", // Corregido aquí también por si acaso
+            "Jamón de Pavo", "Peperoni", "Salami", "Tocino", "Salchicha", 
             "Aceituna negra", "Champiñones", "Jitomate cherry", "Cebolla morada",
             "Pimientos encurtidos", "Compota de cebolla", "Arúgula", "Queso de cabra"
         ];
@@ -65,9 +82,11 @@
         const statusRef = ref(db, 'shopStatus');
         const ingredientsRef = ref(db, 'ingredients');
         const dressingsRef = ref(db, 'dressings');
+        const specialsRef = ref(db, 'specials'); // Referencia nueva
 
         let isShopOpen = false;
 
+        // --- ESTADO TIENDA ---
         onValue(statusRef, (snapshot) => {
             isShopOpen = snapshot.val();
             renderShopStatus();
@@ -82,6 +101,46 @@
             else { btn.className = "shop-switch closed"; label.innerText = "🔴 CERRADO"; }
         }
 
+        // --- ESPECIALES (LÓGICA NUEVA) ---
+        window.addNewSpecial = () => {
+            const input = document.getElementById('new-special-name');
+            const name = input.value.trim();
+            if(name) {
+                // Se guarda como { "Higos": true }
+                set(ref(db, 'specials/' + name), true);
+                input.value = '';
+            }
+        };
+
+        window.deleteSpecial = (name) => {
+            if(confirm(`¿Eliminar "${name}" de los especiales?`)) {
+                remove(ref(db, 'specials/' + name));
+            }
+        };
+
+        onValue(specialsRef, (snapshot) => {
+            const list = document.getElementById('special-list');
+            list.innerHTML = '';
+            const data = snapshot.val();
+            
+            if (data) {
+                Object.keys(data).forEach(itemName => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    // Estilo diferente: Solo mostrar y borrar
+                    div.style.borderColor = "var(--gold)";
+                    div.innerHTML = `
+                        <span class="item-name" style="color:var(--gold); font-weight:bold;">★ ${itemName}</span>
+                        <button class="delete-btn" onclick="deleteSpecial('${itemName}')">🗑️ BORRAR</button>
+                    `;
+                    list.appendChild(div);
+                });
+            } else {
+                list.innerHTML = '<div style="text-align:center; color:#555; padding:10px;">No hay especiales activos</div>';
+            }
+        });
+
+        // --- INGREDIENTES Y ADEREZOS STANDAR ---
         onValue(ingredientsRef, (snapshot) => {
             const data = snapshot.val();
             if (!data) {
