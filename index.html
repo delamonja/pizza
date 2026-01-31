@@ -21,7 +21,6 @@
         }
         .intro-bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            /* El background-image se setea via JS */
             background-repeat: no-repeat; background-position: center center; background-size: cover;
             animation: cinematicPulse 25s infinite alternate ease-in-out; z-index: 1;
         }
@@ -86,7 +85,6 @@
         .ing-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; }
         .ing-name { font-weight: 500; font-size: 0.95rem; }
 
-        /* Estilo para Especiales */
         .special-card { border: 1px solid var(--gold); background: rgba(238, 201, 150, 0.08); }
         .special-card .ing-name { color: var(--gold); }
         .special-card.selected { background: var(--gold); border-color: var(--gold); }
@@ -112,13 +110,38 @@
         .fab.closed-mode { background: #444 !important; border-color: #666; }
         .fab svg { width: 22px; fill: white; }
 
-        /* MODAL */
+        /* MODAL FIX */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(5px); }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--bg-dark); border: 1px solid var(--gold); border-radius: 20px; padding: 2rem; width: 90%; max-width: 400px; text-align: center; transform: translateY(20px); transition: 0.3s; max-height: 90vh; display: flex; flex-direction: column; }
+        .modal-content { 
+            background: var(--bg-dark); 
+            border: 1px solid var(--gold); 
+            border-radius: 20px; 
+            padding: 2rem; 
+            width: 90%; 
+            max-width: 400px; 
+            text-align: center; 
+            transform: translateY(20px); 
+            transition: 0.3s; 
+            max-height: 90vh; /* Se asegura que no sobrepase la pantalla */
+            display: flex; 
+            flex-direction: column; 
+            box-sizing: border-box;
+        }
         .modal-overlay.active .modal-content { transform: translateY(0); }
-        .modal-title { color: var(--gold); font-size: 1.5rem; margin-bottom: 1rem; text-transform: uppercase; }
-        .modal-summary { text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 1.5rem; overflow-y: auto; font-size: 0.95rem; color: #ddd; flex-grow: 1; }
+        .modal-title { color: var(--gold); font-size: 1.5rem; margin-bottom: 1rem; text-transform: uppercase; flex-shrink: 0; }
+        .modal-summary { 
+            text-align: left; 
+            background: rgba(255,255,255,0.05); 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 1.5rem; 
+            overflow-y: auto; /* Habilita el scroll interno */
+            font-size: 0.95rem; 
+            color: #ddd; 
+            flex-grow: 1; 
+            -webkit-overflow-scrolling: touch;
+        }
         .pizza-summary-item { border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; }
         .summary-total { border-top: 1px solid rgba(255,255,255,0.2); margin-top: 10px; padding-top: 10px; text-align: right; font-size: 1.3rem; color: var(--brand-red); font-weight: bold; }
 
@@ -288,7 +311,6 @@
         const EXTRA_PRICE = 10;
         const PHONE_NUMBER = "523411224987"; 
 
-        // SELECCIÓN RANDOM DE FONDO INTRO
         const introBgs = ['leniaa.jpg', 'leniab.jpg'];
         const randomBg = introBgs[Math.floor(Math.random() * introBgs.length)];
         document.querySelector('.intro-bg-layer').style.backgroundImage = `url('${randomBg}')`;
@@ -296,20 +318,19 @@
         const statusRef = ref(db, 'shopStatus');
         const ingredientsRef = ref(db, 'ingredients');
         const dressingsRef = ref(db, 'dressings');
-        const specialsRef = ref(db, 'specials'); // NEW
+        const specialsRef = ref(db, 'specials');
 
         onValue(statusRef, (snapshot) => { isShopOpen = snapshot.val(); updateFabButton(); });
         onValue(ingredientsRef, (snapshot) => { renderIngredientsGrid(snapshot.val()); });
         onValue(dressingsRef, (snapshot) => { renderDressingsGrid(snapshot.val()); });
         
-        // --- ESCUCHAR ESPECIALES ---
         onValue(specialsRef, (snapshot) => {
             const data = snapshot.val();
             const section = document.getElementById('special-section');
             const grid = document.getElementById('special-list');
             
             if (data && Object.keys(data).length > 0) {
-                section.style.display = 'block'; // Mostrar sección
+                section.style.display = 'block';
                 grid.innerHTML = '';
                 Object.keys(data).forEach(name => {
                     const div = document.createElement('div');
@@ -319,7 +340,7 @@
                     grid.appendChild(div);
                 });
             } else {
-                section.style.display = 'none'; // Ocultar si no hay
+                section.style.display = 'none';
             }
             if(window.updateUI) window.updateUI();
         });
@@ -337,7 +358,7 @@
                 div.innerHTML = `<div class="ing-dot"></div><div class="ing-name">${displayName} ${isAvailable ? '' : '<span style="font-size:0.7em; color:#ff4444; display:block;">(Agotado)</span>'}</div>`;
                 grid.appendChild(div);
             });
-            if(window.updateUI) window.updateUI(); 
+            if(window.updateUI) window.updateUI();
         }
 
         function renderDressingsGrid(inventory) {
@@ -382,13 +403,13 @@
         }
 
         window.handleMainAction = () => {
-            if (isShopOpen) { window.openReviewModal(); } 
+            if (isShopOpen) { window.openReviewModal(); }
             else { window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent("Hola De La Monja, veo que el horno está apagado. ¿A qué hora abren?")}`, '_blank'); }
         };
 
         window.addNewPizza = () => {
             pizzas.push({ id: pizzas.length + 1, ingredients: [], dressings: [] });
-            currentPizzaIndex = pizzas.length - 1; 
+            currentPizzaIndex = pizzas.length - 1;
             window.renderPizzaTabs(); window.updateUI();
         }
 
@@ -421,23 +442,22 @@
         window.toggleIngredient = (element, name) => {
             const currentIngredients = pizzas[currentPizzaIndex].ingredients;
             const index = currentIngredients.indexOf(name);
-            if (index > -1) { currentIngredients.splice(index, 1); } 
+            if (index > -1) { currentIngredients.splice(index, 1); }
             else { currentIngredients.push(name); }
-            window.updateUI(); 
+            window.updateUI();
         }
 
         window.toggleDressing = (element, name) => {
             const currentDressings = pizzas[currentPizzaIndex].dressings;
             const index = currentDressings.indexOf(name);
-            if (index > -1) { currentDressings.splice(index, 1); } 
+            if (index > -1) { currentDressings.splice(index, 1); }
             else { currentDressings.push(name); }
-            window.updateUI(); 
+            window.updateUI();
         }
 
         window.updateUI = () => {
             const currentIngredients = pizzas[currentPizzaIndex].ingredients;
             
-            // Ingredientes regulares
             document.querySelectorAll('#ingredients-list .ing-card').forEach(card => {
                 const nameEl = card.querySelector('.ing-name');
                 if(nameEl) {
@@ -446,13 +466,11 @@
                 }
             });
 
-            // Especiales
             document.querySelectorAll('#special-list .special-card').forEach(card => {
                 const name = card.querySelector('.ing-name').innerText;
                 if (currentIngredients.includes(name)) card.classList.add('selected'); else card.classList.remove('selected');
             });
 
-            // Aderezos
             const currentDressings = pizzas[currentPizzaIndex].dressings;
             document.querySelectorAll('#dressings-list .dressing-card').forEach(card => {
                 const name = card.querySelector('.ing-name').innerText;
@@ -519,8 +537,8 @@
             const name = document.getElementById('customer-name').value.trim();
             if (!name) { 
                 const input = document.getElementById('customer-name');
-                input.classList.add('error'); 
-                setTimeout(() => input.classList.remove('error'), 500); 
+                input.classList.add('error');
+                setTimeout(() => input.classList.remove('error'), 500);
                 return; 
             }
 
@@ -548,7 +566,7 @@
         }
 
         window.renderPizzaTabs();
-        window.renderDressingsGrid(); 
+        window.renderDressingsGrid();
         window.updateUI();
     </script>
 </body>
