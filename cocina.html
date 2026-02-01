@@ -1,213 +1,177 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cocina | De La Monja</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocina | De La Monja</title>
+    <style>
+        :root { --bg: #111; --red: #ff0013; --green: #00C851; --text: #fff; --gold: #eec996; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        
+        .admin-logo { display: block; margin: 0 auto 10px; max-width: 120px; filter: drop-shadow(0 0 10px rgba(255, 0, 19, 0.4)); }
+        h1 { text-align: center; color: var(--gold); margin-top: 5px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px;}
+        h2 { text-align: center; color: #ccc; margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 1.2rem;}
+        
+        .shop-switch { background: #333; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px; border: 2px solid #555; cursor: pointer; transition: 0.3s; }
+        .shop-switch.open { background: rgba(0, 200, 81, 0.2); border-color: var(--green); }
+        .shop-switch.closed { background: rgba(255, 68, 68, 0.2); border-color: var(--red); }
+        .status-text { font-size: 2rem; font-weight: bold; display: block; margin-bottom: 5px; }
 
-<style>
-:root { --bg:#111; --red:#ff0013; --green:#00C851; --gold:#eec996; --text:#fff; }
-body { background:var(--bg); color:var(--text); font-family:sans-serif; padding:20px; max-width:700px; margin:0 auto; }
-h1,h2 { text-align:center; }
-h1 { color:var(--gold); }
-h2 { margin-top:40px; border-bottom:1px solid #333; padding-bottom:10px; }
+        .control-list { display: grid; gap: 10px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; }
+        .item-name { font-size: 1.1rem; }
+        
+        .toggle-btn { padding: 8px 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; }
+        .toggle-btn.on { background: var(--green); color: white; }
+        .toggle-btn.off { background: var(--red); color: white; opacity: 0.6; }
+        .delete-btn { background: transparent; border: 1px solid #555; color: #ff4444; margin-left: 10px; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
 
-.shop-switch { padding:20px; border-radius:15px; text-align:center; cursor:pointer; border:2px solid #555; margin-bottom:30px; }
-.shop-switch.open { background:rgba(0,200,81,.2); border-color:var(--green); }
-.shop-switch.closed { background:rgba(255,0,19,.2); border-color:var(--red); }
-.status-text { font-size:2rem; font-weight:bold; }
-
-.control-list { display:grid; gap:10px; }
-.item-row { background:#222; padding:15px; border-radius:10px; border:1px solid #444; display:flex; justify-content:space-between; align-items:center; gap:10px; }
-
-.toggle-btn { border:none; padding:6px 12px; border-radius:20px; font-weight:bold; cursor:pointer; }
-.on { background:var(--green); }
-.off { background:var(--red); opacity:.6; }
-
-.visible-btn { background:#555; }
-.hidden-btn { background:#333; color:#777; }
-
-.delete-btn { background:transparent; border:1px solid #555; color:#ff4444; border-radius:10px; padding:6px 10px; cursor:pointer; }
-
-.add-box { display:flex; gap:10px; margin-bottom:15px; }
-.add-box input { flex:1; padding:10px; border-radius:8px; background:#222; color:#fff; border:1px solid #444; }
-.add-box button { background:var(--gold); border:none; font-weight:bold; border-radius:8px; padding:0 20px; cursor:pointer; }
-</style>
+        /* INPUT AREA FOR SPECIALS */
+        .add-special-box { display: flex; gap: 10px; margin-bottom: 15px; }
+        .special-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 1rem; }
+        .add-btn { background: var(--gold); color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    </style>
 </head>
-
 <body>
+    <img src="logopizza.png" alt="De La Monja" class="admin-logo">
+    <h1>👨‍🍳 CONTROL DE COCINA</h1>
+    
+    <div id="shop-status-btn" class="shop-switch" onclick="toggleShop()">
+        <span class="status-text" id="status-label">Conectando...</span>
+        <span style="font-size:0.9rem; color:#ccc;">(Clic para cambiar estado)</span>
+    </div>
 
-<h1>👨‍🍳 CONTROL DE COCINA</h1>
+    <h2 style="color:var(--gold);">✨ Especiales (Temporada)</h2>
+    <div class="add-special-box">
+        <input type="text" id="new-special-name" class="special-input" placeholder="Ej: Higos, Queso Azul...">
+        <button class="add-btn" onclick="addNewSpecial()">AGREGAR</button>
+    </div>
+    <div class="control-list" id="special-list"></div>
 
-<div id="shop-status" class="shop-switch" onclick="toggleShop()">
-  <div class="status-text" id="shop-label">Conectando…</div>
-  <small>(clic para cambiar)</small>
-</div>
+    <h2>🍕 Ingredientes Base</h2>
+    <div class="control-list" id="ing-list"></div>
+    
+    <h2>🌶️ Aderezos</h2>
+    <div class="control-list" id="dressing-list"></div>
 
-<h2>✨ Especiales</h2>
-<div class="add-box">
-  <input id="new-special" placeholder="Ej. Higos, Trufa…" />
-  <button onclick="addSpecial()">AGREGAR</button>
-</div>
-<div id="special-list" class="control-list"></div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-<h2>🍕 Ingredientes</h2>
-<div id="ingredients-list" class="control-list"></div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
+            authDomain: "delamonjapizza.firebaseapp.com",
+            databaseURL: "https://delamonjapizza-default-rtdb.firebaseio.com",
+            projectId: "delamonjapizza",
+            storageBucket: "delamonjapizza.firebasestorage.app",
+            messagingSenderId: "591665050822",
+            appId: "1:591665050822:web:7358f238adc6dbe05213c7",
+            measurementId: "G-LG2P62XW75"
+        };
 
-<h2>🌶️ Aderezos</h2>
-<div id="dressings-list" class="control-list"></div>
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-<h2>🧾 Pedidos</h2>
-<div id="orders-list" class="control-list"></div>
+        const masterIngredients = [
+            "Jamón de Pavo", "Peperoni", "Salami", "Tocino", "Salchicha", 
+            "Aceituna negra", "Champiñones", "Jitomate cherry", "Cebolla morada",
+            "Pimientos encurtidos", "Compota de cebolla", "Arúgula", "Queso de cabra"
+        ];
+        const masterDressings = ["Chile quebrado", "Chile en aceite", "Ketchup picante", "Pesto", "Chimichurri"];
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue, set, update, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        const statusRef = ref(db, 'shopStatus');
+        const ingredientsRef = ref(db, 'ingredients');
+        const dressingsRef = ref(db, 'dressings');
+        const specialsRef = ref(db, 'specials'); // Referencia nueva
 
-const app = initializeApp({
-  apiKey:"AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
-  authDomain:"delamonjapizza.firebaseapp.com",
-  databaseURL:"https://delamonjapizza-default-rtdb.firebaseio.com",
-  projectId:"delamonjapizza"
-});
-const db = getDatabase(app);
+        let isShopOpen = false;
 
-const masterIngredients = [
- "Jamón de Pavo","Peperoni","Salami","Tocino","Salchicha",
- "Aceituna negra","Champiñones","Jitomate cherry","Cebolla morada",
- "Pimientos encurtidos","Compota de cebolla","Arúgula","Queso de cabra","Piña"
-];
+        // --- ESTADO TIENDA ---
+        onValue(statusRef, (snapshot) => {
+            isShopOpen = snapshot.val();
+            renderShopStatus();
+        });
 
-const masterDressings = [
- "Chile quebrado","Chile en aceite","Catsup picante","Pesto","Chimichurri",
- "De aceituna negra","De chipotle"
-];
+        window.toggleShop = () => { set(statusRef, !isShopOpen); };
 
-const statusRef = ref(db,"shopStatus");
-const ingRef = ref(db,"ingredients");
-const dressRef = ref(db,"dressings");
-const specRef = ref(db,"specials");
-const ordersRef = ref(db,"orders");
+        function renderShopStatus() {
+            const btn = document.getElementById('shop-status-btn');
+            const label = document.getElementById('status-label');
+            if (isShopOpen) { btn.className = "shop-switch open"; label.innerText = "🟢 ABIERTO"; } 
+            else { btn.className = "shop-switch closed"; label.innerText = "🔴 CERRADO"; }
+        }
 
-let shopOpen = false;
+        // --- ESPECIALES (LÓGICA NUEVA) ---
+        window.addNewSpecial = () => {
+            const input = document.getElementById('new-special-name');
+            const name = input.value.trim();
+            if(name) {
+                // Se guarda como { "Higos": true }
+                set(ref(db, 'specials/' + name), true);
+                input.value = '';
+            }
+        };
 
+        window.deleteSpecial = (name) => {
+            if(confirm(`¿Eliminar "${name}" de los especiales?`)) {
+                remove(ref(db, 'specials/' + name));
+            }
+        };
 
-onValue(statusRef,s=>{ shopOpen=!!s.val(); renderShop(); });
+        onValue(specialsRef, (snapshot) => {
+            const list = document.getElementById('special-list');
+            list.innerHTML = '';
+            const data = snapshot.val();
+            
+            if (data) {
+                Object.keys(data).forEach(itemName => {
+                    const div = document.createElement('div');
+                    div.className = 'item-row';
+                    // Estilo diferente: Solo mostrar y borrar
+                    div.style.borderColor = "var(--gold)";
+                    div.innerHTML = `
+                        <span class="item-name" style="color:var(--gold); font-weight:bold;">★ ${itemName}</span>
+                        <button class="delete-btn" onclick="deleteSpecial('${itemName}')">🗑️ BORRAR</button>
+                    `;
+                    list.appendChild(div);
+                });
+            } else {
+                list.innerHTML = '<div style="text-align:center; color:#555; padding:10px;">No hay especiales activos</div>';
+            }
+        });
 
-function renderShop(){
-  const el=document.getElementById("shop-status");
-  document.getElementById("shop-label").innerText = shopOpen?"🟢 ABIERTO":"🔴 CERRADO";
-  el.className="shop-switch "+(shopOpen?"open":"closed");
-}
-window.toggleShop=()=>set(statusRef,!shopOpen);
+        // --- INGREDIENTES Y ADEREZOS STANDAR ---
+        onValue(ingredientsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                const initialData = {};
+                masterIngredients.forEach(ing => initialData[ing] = true);
+                set(ingredientsRef, initialData);
+            } else { renderList(data, 'ing-list', 'ingredients'); }
+        });
 
-/* AUTO CIERRE 21:30 */
-function autoClose(){
- const n=new Date();
- if(n.getHours()>21 || (n.getHours()==21 && n.getMinutes()>=30)) set(statusRef,false);
-}
-autoClose(); setInterval(autoClose,60000);
+        onValue(dressingsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                const initialData = {};
+                masterDressings.forEach(d => initialData[d] = true);
+                set(dressingsRef, initialData);
+            } else { renderList(data, 'dressing-list', 'dressings'); }
+        });
 
-/* INIT INGREDIENTS */
+        function renderList(data, elementId, dbNode) {
+            const list = document.getElementById(elementId);
+            list.innerHTML = ''; 
+            Object.keys(data).sort().forEach(itemName => {
+                const isAvailable = data[itemName];
+                const div = document.createElement('div');
+                div.className = 'item-row';
+                div.innerHTML = `<span class="item-name" style="opacity: ${isAvailable ? 1 : 0.4}">${itemName}</span><button class="toggle-btn ${isAvailable ? 'on' : 'off'}" onclick="toggleItem('${dbNode}', '${itemName}', ${isAvailable})">${isAvailable ? 'DISPONIBLE' : 'AGOTADO'}</button>`;
+                list.appendChild(div);
+            });
+        }
 
-onValue(ingRef,s=>{
- if(!s.val()){
-  const o={}; masterIngredients.forEach(i=>o[i]={available:true,visible:true});
-  set(ingRef,o);
- } else renderInventory(s.val(),ingRef,"ingredients-list");
-});
-
-onValue(ingredientsRef, (snapshot) => {
-  const data = snapshot.val() || {};
-  let updated = false;
-
-  masterIngredients.forEach(name => {
-    if (!data[name]) {
-      data[name] = { available: true, visible: true };
-      updated = true;
-    }
-  });
-
-  if (updated) set(ingredientsRef, data);
-});
-
-onValue(dressRef,s=>{
- if(!s.val()){
-  const o={}; masterDressings.forEach(i=>o[i]={available:true,visible:true});
-  set(dressRef,o);
- } else renderInventory(s.val(),dressRef,"dressings-list");
-});
-onValue(dressingsRef, (snapshot) => {
-  const data = snapshot.val();
-  if (!data) return;
-
-  if (data["Ketchup picante"] && !data["Catsup picante"]) {
-    data["Catsup picante"] = data["Ketchup picante"];
-    delete data["Ketchup picante"];
-    set(dressingsRef, data);
-  }
-});
-
-
-function renderInventory(data,refNode,target){
- const list=document.getElementById(target); list.innerHTML="";
- Object.entries(data).forEach(([name,obj])=>{
-  const row=document.createElement("div");
-  row.className="item-row";
-  row.innerHTML=`
-   <strong>${name}</strong>
-   <div>
-    <button class="toggle-btn ${obj.available?"on":"off"}"
-     onclick="toggleAvail('${refNode.key}','${name}',${obj.available})">
-     ${obj.available?"OK":"AGOTADO"}
-    </button>
-    <button class="toggle-btn ${obj.visible?"visible-btn":"hidden-btn"}"
-     onclick="toggleVis('${refNode.key}','${name}',${obj.visible})">
-     ${obj.visible?"VISIBLE":"OCULTO"}
-    </button>
-   </div>`;
-  list.appendChild(row);
- });
-}
-
-window.toggleAvail=(node,n,c)=>update(ref(db,node+"/"+n),{available:!c});
-window.toggleVis=(node,n,c)=>update(ref(db,node+"/"+n),{visible:!c});
-
-/* ESPECIALES */
-window.addSpecial=()=>{
- const v=document.getElementById("new-special").value.trim();
- if(v) set(ref(db,"specials/"+v),true),document.getElementById("new-special").value="";
-};
-
-onValue(specRef,s=>{
- const list=document.getElementById("special-list"); list.innerHTML="";
- if(!s.val()) return;
- Object.keys(s.val()).forEach(n=>{
-  const d=document.createElement("div");
-  d.className="item-row";
-  d.innerHTML=`★ ${n}<button class="delete-btn" onclick="remove(ref(db,'specials/${n}'))">🗑</button>`;
-  list.appendChild(d);
- });
-});
-
-/* PEDIDOS */
-onValue(ordersRef,s=>{
- const list=document.getElementById("orders-list"); list.innerHTML="";
- if(!s.val()) return;
- Object.entries(s.val()).reverse().forEach(([id,o])=>{
-  const d=document.createElement("div");
-  d.className="item-row";
-  d.innerHTML=`
-   <div>
-    <strong>${o.name}</strong><br>
-    <small>${new Date(o.time).toLocaleTimeString()}</small>
-   </div>
-   <button onclick="update(ref(db,'orders/${id}'),{status:'done'})">
-    ${o.status==="pending"?"✓ Hecho":"✔ Listo"}
-   </button>`;
-  list.appendChild(d);
- });
-});
-</script>
+        window.toggleItem = (dbNode, name, currentState) => { update(ref(db, dbNode), { [name]: !currentState }); };
+    </script>
 </body>
 </html>
