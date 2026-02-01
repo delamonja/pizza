@@ -256,6 +256,14 @@
             </div>
 
             <input type="text" id="customer-name" class="name-input" placeholder="Escribe tu Nombre aquí..." autocomplete="off">
+<textarea
+  id="special-notes"
+  class="name-input"
+  placeholder="Indicaciones especiales (ej. sin sal, bien dorada, alergias, etc.)"
+  rows="3"
+></textarea>
+
+
             <div class="modal-actions">
                 <button class="btn-modal btn-cancel" onclick="closeReviewModal()">Volver</button>
                 <button class="btn-modal btn-confirm" onclick="finalizeOrder()">Enviar a Cocina</button>
@@ -265,7 +273,16 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set,
+  update,
+  remove,
+  push
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
@@ -286,7 +303,7 @@
         let deliveryMethod = 'pickup'; 
         const BASE_PRICE = 160;
         const EXTRA_PRICE = 10;
-        const PHONE_NUMBER = "523411224987"; 
+        const PHONE_NUMBER = "523411224987";
 
         // SELECCIÓN RANDOM DE FONDO INTRO
         const introBgs = ['leniaa.jpg', 'leniab.jpg'];
@@ -297,6 +314,9 @@
         const ingredientsRef = ref(db, 'ingredients');
         const dressingsRef = ref(db, 'dressings');
         const specialsRef = ref(db, 'specials'); // NEW
+        const ordersRef = ref(db, "orders");
+
+
 
         onValue(statusRef, (snapshot) => { isShopOpen = snapshot.val(); updateFabButton(); });
         onValue(ingredientsRef, (snapshot) => { renderIngredientsGrid(snapshot.val()); });
@@ -517,6 +537,8 @@
 
         window.finalizeOrder = () => {
             const name = document.getElementById('customer-name').value.trim();
+            const notes = document.getElementById("special-notes")?.value.trim() || "";
+
             if (!name) { 
                 const input = document.getElementById('customer-name');
                 input.classList.add('error'); 
@@ -536,19 +558,35 @@
                 if (p.dressings.length > 0) text += `- Aderezos: ${p.dressings.join(", ")}\n`;
                 text += `\n`;
             });
+            if (notes) {
+text += `📝 *Indicaciones:* ${notes}\n\n`;
+}
 
             text += `*TOTAL: $${grandTotal}*\n`;
             if (deliveryMethod === 'brewery') text += `📍 *ENTREGA EN BORREGA MECÁNICA* 🍺`;
             else if (deliveryMethod === 'barra27') text += `📍 *ENTREGA EN BARRA 27* 🍸`;
             else if (deliveryMethod === 'manda2') text += `🛵 *A DOMICILIO (Manda2 Express)*`;
             else text += `🥡 *PASO A RECOGER (En tienda)*`;
+            //const notes = document.getElementById("special-notes")?.value.trim() || "";
+
+push(ordersRef, {
+    name,
+    notes,
+    pizzas,
+    total: grandTotal,
+    delivery: deliveryMethod,
+    time: Date.now(),
+    status: "pending"
+});
+
 
             window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
             window.closeReviewModal();
         }
 
         window.renderPizzaTabs();
-        window.renderDressingsGrid(); 
+        renderDressingsGrid();
+
         window.updateUI();
     </script>
 </body>
