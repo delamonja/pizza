@@ -91,6 +91,7 @@ const ordersRef = ref(db,"orders");
 
 let shopOpen = false;
 
+
 onValue(statusRef,s=>{ shopOpen=!!s.val(); renderShop(); });
 
 function renderShop(){
@@ -108,11 +109,26 @@ function autoClose(){
 autoClose(); setInterval(autoClose,60000);
 
 /* INIT INGREDIENTS */
+
 onValue(ingRef,s=>{
  if(!s.val()){
   const o={}; masterIngredients.forEach(i=>o[i]={available:true,visible:true});
   set(ingRef,o);
  } else renderInventory(s.val(),ingRef,"ingredients-list");
+});
+
+onValue(ingredientsRef, (snapshot) => {
+  const data = snapshot.val() || {};
+  let updated = false;
+
+  masterIngredients.forEach(name => {
+    if (!data[name]) {
+      data[name] = { available: true, visible: true };
+      updated = true;
+    }
+  });
+
+  if (updated) set(ingredientsRef, data);
 });
 
 onValue(dressRef,s=>{
@@ -121,6 +137,17 @@ onValue(dressRef,s=>{
   set(dressRef,o);
  } else renderInventory(s.val(),dressRef,"dressings-list");
 });
+onValue(dressingsRef, (snapshot) => {
+  const data = snapshot.val();
+  if (!data) return;
+
+  if (data["Ketchup picante"] && !data["Catsup picante"]) {
+    data["Catsup picante"] = data["Ketchup picante"];
+    delete data["Ketchup picante"];
+    set(dressingsRef, data);
+  }
+});
+
 
 function renderInventory(data,refNode,target){
  const list=document.getElementById(target); list.innerHTML="";
