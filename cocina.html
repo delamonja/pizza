@@ -40,6 +40,8 @@
         <span class="status-text" id="status-label">Conectando...</span>
         <span style="font-size:0.9rem; color:#ccc;">(Clic para cambiar estado)</span>
     </div>
+<h2>📋 Pedidos</h2>
+<div class="control-list" id="orders-list"></div>
 
     <h2 style="color:var(--gold);">✨ Especiales (Temporada)</h2>
     <div class="add-special-box">
@@ -83,6 +85,8 @@
         const ingredientsRef = ref(db, 'ingredients');
         const dressingsRef = ref(db, 'dressings');
         const specialsRef = ref(db, 'specials'); // Referencia nueva
+    const ordersRef = ref(db, "orders");
+
 
         let isShopOpen = false;
 
@@ -100,6 +104,12 @@
             if (isShopOpen) { btn.className = "shop-switch open"; label.innerText = "🟢 ABIERTO"; } 
             else { btn.className = "shop-switch closed"; label.innerText = "🔴 CERRADO"; }
         }
+function formatOrderTime(ts) {
+  const d = new Date(ts);
+  const hh = d.getHours().toString().padStart(2, "0");
+  const mm = d.getMinutes().toString().padStart(2, "0");
+  return `${hh}:${mm}`;
+}
 
         // --- ESPECIALES (LÓGICA NUEVA) ---
         window.addNewSpecial = () => {
@@ -170,8 +180,82 @@
                 list.appendChild(div);
             });
         }
+        //Órdenes
+onValue(ordersRef, (snapshot) => {
+  const data = snapshot.val();
+  renderOrders(data);
+});
+function renderOrders(data) {
+  const wrap = document.getElementById("orders-list");
+  wrap.innerHTML = "";
+
+  if (!data) {
+    wrap.innerHTML = `<div class="empty">No hay pedidos</div>`;
+    return;
+  }
+
+  Object.entries(data)
+    .sort((a, b) => b[1].time - a[1].time) // newest first
+    .forEach(([id, order]) => {
+      const card = document.createElement("div");
+      card.className = "order-card";
+
+      let pizzasHTML = "";
+
+      (order.pizzas || []).forEach((p, i) => {
+        pizzasHTML += `
+          <div class="pizza-block">
+            <strong>🍕 Pizza ${i + 1}</strong><br>
+            Ingredientes: ${(p.ingredients || []).join(", ") || "—"}<br>
+            Extras: ${(p.ingredients || []).slice(2).join(", ") || "—"}<br>
+            Aderezos: ${(p.dressings || []).join(", ") || "—"}
+          </div>
+        `;
+      });
+
+      card.innerHTML = `
+        <div class="order-header">
+          <strong>${order.name}</strong>
+          <span class="status ${order.status}">${order.status}</span>
+<span class="order-time">⏱️ ${formatOrderTime(order.time)}</span>
+        </div>
+
+        ${order.notes ? `<div class="notes">📝 ${order.notes}</div>` : ""}
+
+        <div class="pizzas">
+          ${pizzasHTML}
+        </div>
+
+        <div class="order-footer">
+          <span class="total">$${order.total}</span>
+
+          <div class="actions">
+            <button class="btn-done" onclick="completeOrder('${id}')">
+              MARCAR LISTO
+            </button>
+            <button class="btn-delete" onclick="deleteOrder('${id}')">
+              ELIMINAR
+            </button>
+          </div>
+        </div>
+      `;
+
+      wrap.appendChild(card);
+    });
+}
+
 
         window.toggleItem = (dbNode, name, currentState) => { update(ref(db, dbNode), { [name]: !currentState }); };
+window.completeOrder = (id) => {
+  const orderRef = ref(db, `orders/${id}`);
+  update(orderRef, { status: "ready" });
+};
+window.deleteOrder = (id) => {
+  if (!confirm("¿Eliminar pedido?")) return;
+  const orderRef = ref(db, `orders/${id}`);
+  remove(orderRef);
+};
+
     </script>
 </body>
 </html>
