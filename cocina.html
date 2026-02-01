@@ -53,7 +53,7 @@
     
     <div id="shop-status-btn" class="shop-switch" onclick="toggleShop()">
         <span class="status-text" id="status-label">Conectando...</span>
-        <span style="font-size:0.9rem; color:#ccc;">(Clic para cambiar estado)</span>
+        <span style="font-size:0.9rem; color:#ccc;">(Click para cambiar estado)</span>
     </div>
 
     <h2>📋 Pedidos</h2>
@@ -109,10 +109,10 @@
                 orderSound.play().then(() => {
                     audioEnabled = true;
                     btn.className = "audio-toggle audio-on";
-                    btn.innerText = "✅ AUDIO ACTIVADO (Clic para apagar)";
+                    btn.innerText = "✅ AUDIO ACTIVADO (Click para apagar)";
                     console.log("🔊 Audio de cocina activado y probado.");
                 }).catch(e => {
-                    alert("Interacción requerida: Haz clic de nuevo para permitir el sonido.");
+                    alert("Interacción requerida: Haz click de nuevo para permitir el sonido.");
                 });
             } else {
                 audioEnabled = false;
