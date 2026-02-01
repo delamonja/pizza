@@ -30,6 +30,86 @@
         .add-special-box { display: flex; gap: 10px; margin-bottom: 15px; }
         .special-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 1rem; }
         .add-btn { background: var(--gold); color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+.order-listo {
+  border-left: 4px solid #3bd16f;
+  background: linear-gradient(
+    90deg,
+    rgba(59, 209, 111, 0.08),
+    rgba(0, 0, 0, 0)
+  );
+}
+
+.status.listo {
+  color: #3bd16f;
+  font-weight: 600;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.actions button {
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+/* MARCAR LISTO */
+.btn-done {
+  background: linear-gradient(135deg, #1db954, #1ed760);
+  color: #111;
+}
+
+.btn-done:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(30, 215, 96, 0.35);
+}
+
+/* ELIMINAR */
+.btn-delete {
+  background: transparent;
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+}
+
+.btn-delete:hover {
+  background: rgba(255, 107, 107, 0.15);
+}
+
+/* VISUAL STATE WHEN LISTO */
+.order-listo {
+  border-left: 4px solid #1ed760;
+  opacity: 0.85;
+}
+
+.order-listo .status {
+  color: #1ed760;
+  font-weight: 700;
+}
+
+.sound-btn {
+  background: #1f1f1f;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.sound-btn.off {
+  opacity: 0.5;
+}
+
+
     </style>
 </head>
 <body>
@@ -41,6 +121,10 @@
         <span style="font-size:0.9rem; color:#ccc;">(Clic para cambiar estado)</span>
     </div>
 <h2>📋 Pedidos</h2>
+<button id="sound-toggle" class="sound-btn">
+  🔔 Sonido: ON
+</button>
+
 <div class="control-list" id="orders-list"></div>
 
     <h2 style="color:var(--gold);">✨ Especiales (Temporada)</h2>
@@ -55,153 +139,153 @@
     
     <h2>🌶️ Aderezos</h2>
     <div class="control-list" id="dressing-list"></div>
+<audio id="order-sound" preload="auto">
+  <source src="order.mp3" type="audio/mpeg">
+</audio>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+<script type="module">
+/* =========================
+   🔊 AUDIO (GLOBAL SCOPE)
+========================= */
+const orderSound = new Audio("order.mp3");
+orderSound.preload = "auto";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
-            authDomain: "delamonjapizza.firebaseapp.com",
-            databaseURL: "https://delamonjapizza-default-rtdb.firebaseio.com",
-            projectId: "delamonjapizza",
-            storageBucket: "delamonjapizza.firebasestorage.app",
-            messagingSenderId: "591665050822",
-            appId: "1:591665050822:web:7358f238adc6dbe05213c7",
-            measurementId: "G-LG2P62XW75"
-        };
+let soundEnabled = false;
+let audioUnlocked = false;
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+/* =========================
+   🔥 FIREBASE
+========================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue, set, update, remove, get } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const masterIngredients = [
-            "Jamón de Pavo", "Peperoni", "Salami", "Tocino", "Salchicha", 
-            "Aceituna negra", "Champiñones", "Jitomate cherry", "Cebolla morada",
-            "Pimientos encurtidos", "Compota de cebolla", "Arúgula", "Queso de cabra"
-        ];
-        const masterDressings = ["Chile quebrado", "Chile en aceite", "Ketchup picante", "Pesto", "Chimichurri"];
+const firebaseConfig = {
+  apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
+  authDomain: "delamonjapizza.firebaseapp.com",
+  databaseURL: "https://delamonjapizza-default-rtdb.firebaseio.com",
+  projectId: "delamonjapizza",
+  storageBucket: "delamonjapizza.appspot.com",
+  messagingSenderId: "591665050822",
+  appId: "1:591665050822:web:7358f238adc6dbe05213c7"
+};
 
-        const statusRef = ref(db, 'shopStatus');
-        const ingredientsRef = ref(db, 'ingredients');
-        const dressingsRef = ref(db, 'dressings');
-        const specialsRef = ref(db, 'specials'); // Referencia nueva
-    const ordersRef = ref(db, "orders");
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
+const ordersRef = ref(db, "orders");
+const statusRef = ref(db, "shopStatus");
 
-        let isShopOpen = false;
+let knownOrders = new Set();
+let isShopOpen = false;
 
-        // --- ESTADO TIENDA ---
-        onValue(statusRef, (snapshot) => {
-            isShopOpen = snapshot.val();
-            renderShopStatus();
-        });
-
-        window.toggleShop = () => { set(statusRef, !isShopOpen); };
-
-        function renderShopStatus() {
-            const btn = document.getElementById('shop-status-btn');
-            const label = document.getElementById('status-label');
-            if (isShopOpen) { btn.className = "shop-switch open"; label.innerText = "🟢 ABIERTO"; } 
-            else { btn.className = "shop-switch closed"; label.innerText = "🔴 CERRADO"; }
-        }
+/* =========================
+   🧠 HELPERS
+========================= */
 function formatOrderTime(ts) {
   const d = new Date(ts);
-  const hh = d.getHours().toString().padStart(2, "0");
-  const mm = d.getMinutes().toString().padStart(2, "0");
-  return `${hh}:${mm}`;
+  return d.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
 }
 
-        // --- ESPECIALES (LÓGICA NUEVA) ---
-        window.addNewSpecial = () => {
-            const input = document.getElementById('new-special-name');
-            const name = input.value.trim();
-            if(name) {
-                // Se guarda como { "Higos": true }
-                set(ref(db, 'specials/' + name), true);
-                input.value = '';
-            }
-        };
+/* =========================
+   🔔 SOUND TOGGLE BUTTON
+========================= */
+const soundBtn = document.getElementById("sound-toggle");
 
-        window.deleteSpecial = (name) => {
-            if(confirm(`¿Eliminar "${name}" de los especiales?`)) {
-                remove(ref(db, 'specials/' + name));
-            }
-        };
+soundBtn.addEventListener("click", async () => {
+  try {
+    if (!audioUnlocked) {
+      orderSound.volume = 0;
+      await orderSound.play();
+      orderSound.pause();
+      orderSound.currentTime = 0;
+      orderSound.volume = 1;
+      audioUnlocked = true;
+      console.log("🔓 Audio unlocked");
+    }
 
-        onValue(specialsRef, (snapshot) => {
-            const list = document.getElementById('special-list');
-            list.innerHTML = '';
-            const data = snapshot.val();
-            
-            if (data) {
-                Object.keys(data).forEach(itemName => {
-                    const div = document.createElement('div');
-                    div.className = 'item-row';
-                    // Estilo diferente: Solo mostrar y borrar
-                    div.style.borderColor = "var(--gold)";
-                    div.innerHTML = `
-                        <span class="item-name" style="color:var(--gold); font-weight:bold;">★ ${itemName}</span>
-                        <button class="delete-btn" onclick="deleteSpecial('${itemName}')">🗑️ BORRAR</button>
-                    `;
-                    list.appendChild(div);
-                });
-            } else {
-                list.innerHTML = '<div style="text-align:center; color:#555; padding:10px;">No hay especiales activos</div>';
-            }
-        });
+    soundEnabled = !soundEnabled;
+    soundBtn.innerHTML = soundEnabled
+      ? "🔔 Sonido: ON"
+      : "🔕 Sonido: OFF";
 
-        // --- INGREDIENTES Y ADEREZOS STANDAR ---
-        onValue(ingredientsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) {
-                const initialData = {};
-                masterIngredients.forEach(ing => initialData[ing] = true);
-                set(ingredientsRef, initialData);
-            } else { renderList(data, 'ing-list', 'ingredients'); }
-        });
+    soundBtn.classList.toggle("off", !soundEnabled);
 
-        onValue(dressingsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) {
-                const initialData = {};
-                masterDressings.forEach(d => initialData[d] = true);
-                set(dressingsRef, initialData);
-            } else { renderList(data, 'dressing-list', 'dressings'); }
-        });
+    // 🔊 test sound
+    if (soundEnabled) {
+      orderSound.currentTime = 0;
+      orderSound.play();
+    }
 
-        function renderList(data, elementId, dbNode) {
-            const list = document.getElementById(elementId);
-            list.innerHTML = ''; 
-            Object.keys(data).sort().forEach(itemName => {
-                const isAvailable = data[itemName];
-                const div = document.createElement('div');
-                div.className = 'item-row';
-                div.innerHTML = `<span class="item-name" style="opacity: ${isAvailable ? 1 : 0.4}">${itemName}</span><button class="toggle-btn ${isAvailable ? 'on' : 'off'}" onclick="toggleItem('${dbNode}', '${itemName}', ${isAvailable})">${isAvailable ? 'DISPONIBLE' : 'AGOTADO'}</button>`;
-                list.appendChild(div);
-            });
-        }
-        //Órdenes
-onValue(ordersRef, (snapshot) => {
+  } catch (err) {
+    console.warn("Audio error:", err);
+  }
+});
+
+/* =========================
+   🏪 SHOP STATUS
+========================= */
+onValue(statusRef, snap => {
+  isShopOpen = snap.val();
+  const btn = document.getElementById("shop-status-btn");
+  const label = document.getElementById("status-label");
+
+  if (isShopOpen) {
+    btn.className = "shop-switch open";
+    label.textContent = "🟢 ABIERTO";
+  } else {
+    btn.className = "shop-switch closed";
+    label.textContent = "🔴 CERRADO";
+  }
+});
+
+window.toggleShop = () => set(statusRef, !isShopOpen);
+
+/* =========================
+   📦 ORDERS LISTENER
+========================= */
+onValue(ordersRef, snapshot => {
+  const wrap = document.getElementById("orders-list");
+  wrap.innerHTML = "";
+
   const data = snapshot.val();
+  console.log("📦 orders snapshot:", data);
+
+  if (!data) {
+    knownOrders.clear();
+    wrap.innerHTML = "<div class='empty'>No hay pedidos</div>";
+    return;
+  }
+
+  const currentIds = Object.keys(data);
+
+  // 🔔 play sound on NEW order
+  currentIds.forEach(id => {
+    if (!knownOrders.has(id) && soundEnabled && audioUnlocked) {
+      orderSound.currentTime = 0;
+      orderSound.play().catch(() => {});
+    }
+  });
+
+  knownOrders = new Set(currentIds);
   renderOrders(data);
 });
+
+/* =========================
+   🧱 RENDER ORDERS
+========================= */
 function renderOrders(data) {
   const wrap = document.getElementById("orders-list");
   wrap.innerHTML = "";
 
-  if (!data) {
-    wrap.innerHTML = `<div class="empty">No hay pedidos</div>`;
-    return;
-  }
-
   Object.entries(data)
-    .sort((a, b) => b[1].time - a[1].time) // newest first
+    .sort((a, b) => b[1].time - a[1].time)
     .forEach(([id, order]) => {
       const card = document.createElement("div");
       card.className = "order-card";
+      card.classList.toggle("order-listo", order.status === "listo");
 
       let pizzasHTML = "";
-
       (order.pizzas || []).forEach((p, i) => {
         pizzasHTML += `
           <div class="pizza-block">
@@ -209,33 +293,25 @@ function renderOrders(data) {
             Ingredientes: ${(p.ingredients || []).join(", ") || "—"}<br>
             Extras: ${(p.ingredients || []).slice(2).join(", ") || "—"}<br>
             Aderezos: ${(p.dressings || []).join(", ") || "—"}
-          </div>
-        `;
+          </div>`;
       });
 
       card.innerHTML = `
         <div class="order-header">
           <strong>${order.name}</strong>
           <span class="status ${order.status}">${order.status}</span>
-<span class="order-time">⏱️ ${formatOrderTime(order.time)}</span>
+          <span class="order-time">⏱️ ${formatOrderTime(order.time)}</span>
         </div>
 
         ${order.notes ? `<div class="notes">📝 ${order.notes}</div>` : ""}
 
-        <div class="pizzas">
-          ${pizzasHTML}
-        </div>
+        <div class="pizzas">${pizzasHTML}</div>
 
         <div class="order-footer">
           <span class="total">$${order.total}</span>
-
           <div class="actions">
-            <button class="btn-done" onclick="completeOrder('${id}')">
-              MARCAR LISTO
-            </button>
-            <button class="btn-delete" onclick="deleteOrder('${id}')">
-              ELIMINAR
-            </button>
+            <button class="btn-done" onclick="completeOrder('${id}')">MARCAR LISTO</button>
+            <button class="btn-delete" onclick="deleteOrder('${id}')">ELIMINAR</button>
           </div>
         </div>
       `;
@@ -244,18 +320,24 @@ function renderOrders(data) {
     });
 }
 
+/* =========================
+   ✅ ACTIONS
+========================= */
+window.completeOrder = async (id) => {
+  const refOrder = ref(db, `orders/${id}`);
+  const snap = await get(refOrder);
+  if (!snap.exists()) return;
 
-        window.toggleItem = (dbNode, name, currentState) => { update(ref(db, dbNode), { [name]: !currentState }); };
-window.completeOrder = (id) => {
-  const orderRef = ref(db, `orders/${id}`);
-  update(orderRef, { status: "ready" });
+  const next = snap.val().status === "listo" ? "pending" : "listo";
+  update(refOrder, { status: next });
 };
+
 window.deleteOrder = (id) => {
-  if (!confirm("¿Eliminar pedido?")) return;
-  const orderRef = ref(db, `orders/${id}`);
-  remove(orderRef);
+  if (confirm("¿Eliminar pedido?")) {
+    remove(ref(db, `orders/${id}`));
+  }
 };
+</script>
 
-    </script>
 </body>
 </html>
