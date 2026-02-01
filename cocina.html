@@ -7,96 +7,47 @@
     <style>
         :root { --bg: #111; --red: #ff0013; --green: #00C851; --text: #fff; --gold: #eec996; }
         body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
-        
         .admin-logo { display: block; margin: 0 auto 10px; max-width: 120px; filter: drop-shadow(0 0 10px rgba(255, 0, 19, 0.4)); }
         h1 { text-align: center; color: var(--gold); margin-top: 5px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px;}
         h2 { text-align: center; color: #ccc; margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 1.2rem;}
         
+        /* AUDIO TOGGLE STYLES */
+        .audio-toggle { padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
+        .audio-off { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(238, 201, 150, 0.3); }
+        .audio-on { background: rgba(0, 200, 81, 0.1); color: var(--green); border-color: var(--green); }
+
         .shop-switch { background: #333; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 30px; border: 2px solid #555; cursor: pointer; transition: 0.3s; }
         .shop-switch.open { background: rgba(0, 200, 81, 0.2); border-color: var(--green); }
         .shop-switch.closed { background: rgba(255, 68, 68, 0.2); border-color: var(--red); }
         .status-text { font-size: 2rem; font-weight: bold; display: block; margin-bottom: 5px; }
-
+        
         .control-list { display: grid; gap: 10px; }
         .item-row { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; }
         .item-name { font-size: 1.1rem; }
-        
         .toggle-btn { padding: 8px 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; }
         .toggle-btn.on { background: var(--green); color: white; }
         .toggle-btn.off { background: var(--red); color: white; opacity: 0.6; }
         .delete-btn { background: transparent; border: 1px solid #555; color: #ff4444; margin-left: 10px; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
-
-        /* INPUT AREA FOR SPECIALS */
+        
+        .order-card { background: #222; padding: 15px; border-radius: 12px; border: 1px solid #444; margin-bottom: 10px; }
+        .order-listo { border-left: 4px solid #1ed760; opacity: 0.85; }
+        .status.listo { color: #1ed760; font-weight: 700; }
+        .actions { display: flex; gap: 10px; margin-top: 10px; }
+        .actions button { padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; }
+        .btn-done { background: linear-gradient(135deg, #1db954, #1ed760); color: #111; }
+        .btn-delete { background: transparent; color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.4); }
+        .pizza-block { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 5px; margin-top: 5px; font-size: 0.9rem; }
+        
         .add-special-box { display: flex; gap: 10px; margin-bottom: 15px; }
         .special-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 1rem; }
         .add-btn { background: var(--gold); color: black; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-.order-listo {
-  border-left: 4px solid #3bd16f;
-  background: linear-gradient(
-    90deg,
-    rgba(59, 209, 111, 0.08),
-    rgba(0, 0, 0, 0)
-  );
-}
-
-.status.listo {
-  color: #3bd16f;
-  font-weight: 600;
-}
-.actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.actions button {
-  padding: 6px 14px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  border: none;
-  transition: all 0.15s ease;
-}
-
-/* MARCAR LISTO */
-.btn-done {
-  background: linear-gradient(135deg, #1db954, #1ed760);
-  color: #111;
-}
-
-.btn-done:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(30, 215, 96, 0.35);
-}
-
-/* ELIMINAR */
-.btn-delete {
-  background: transparent;
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 107, 107, 0.4);
-}
-
-.btn-delete:hover {
-  background: rgba(255, 107, 107, 0.15);
-}
-
-/* VISUAL STATE WHEN LISTO */
-.order-listo {
-  border-left: 4px solid #1ed760;
-  opacity: 0.85;
-}
-
-.order-listo .status {
-  color: #1ed760;
-  font-weight: 700;
-}
-
     </style>
 </head>
 <body>
+    <div id="audio-toggle-btn" class="audio-toggle audio-off" onclick="toggleAudioSystem()">
+        🔊 ENCENDER AUDIO DE COCINA
+    </div>
+    
     <img src="logopizza.png" alt="De La Monja" class="admin-logo">
     <h1>👨‍🍳 CONTROL DE COCINA</h1>
     
@@ -104,8 +55,9 @@
         <span class="status-text" id="status-label">Conectando...</span>
         <span style="font-size:0.9rem; color:#ccc;">(Clic para cambiar estado)</span>
     </div>
-<h2>📋 Pedidos</h2>
-<div class="control-list" id="orders-list"></div>
+
+    <h2>📋 Pedidos</h2>
+    <div class="control-list" id="orders-list"></div>
 
     <h2 style="color:var(--gold);">✨ Especiales (Temporada)</h2>
     <div class="add-special-box">
@@ -119,15 +71,14 @@
     
     <h2>🌶️ Aderezos</h2>
     <div class="control-list" id="dressing-list"></div>
-<audio id="order-sound" preload="auto">
-  <source src="order.mp3" type="audio/mpeg">
-</audio>
+
+    <audio id="order-sound" preload="auto">
+        <source src="order.mp3" type="audio/mpeg">
+    </audio>
 
     <script type="module">
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        let knownOrders = new Set();
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
@@ -143,244 +94,155 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        const masterIngredients = [
-            "Jamón de Pavo", "Peperoni", "Salami", "Tocino", "Salchicha", 
-            "Aceituna negra", "Champiñones", "Jitomate cherry", "Cebolla morada",
-            "Pimientos encurtidos", "Compota de cebolla", "Arúgula", "Queso de cabra"
-        ];
-        const masterDressings = ["Chile quebrado", "Chile en aceite", "Ketchup picante", "Pesto", "Chimichurri"];
-
-        const statusRef = ref(db, 'shopStatus');
-        const ingredientsRef = ref(db, 'ingredients');
-        const dressingsRef = ref(db, 'dressings');
-        const specialsRef = ref(db, 'specials'); // Referencia nueva
-        const ordersRef = ref(db, "orders");
-
-
         let isShopOpen = false;
+        let knownOrders = new Set();
+        let firstLoad = true;
+        let audioEnabled = false;
+        const orderSound = document.getElementById("order-sound");
 
-        // --- ESTADO TIENDA ---
-        onValue(statusRef, (snapshot) => {
-            isShopOpen = snapshot.val();
-            renderShopStatus();
-        });
+        // --- GLOBAL EXPOSURE ---
+        window.toggleAudioSystem = () => {
+            const btn = document.getElementById('audio-toggle-btn');
+            
+            if (!audioEnabled) {
+                // Try to play sound immediately as feedback/unlock
+                orderSound.play().then(() => {
+                    audioEnabled = true;
+                    btn.className = "audio-toggle audio-on";
+                    btn.innerText = "✅ AUDIO ACTIVADO (Clic para apagar)";
+                    console.log("🔊 Audio de cocina activado y probado.");
+                }).catch(e => {
+                    alert("Interacción requerida: Haz clic de nuevo para permitir el sonido.");
+                });
+            } else {
+                audioEnabled = false;
+                btn.className = "audio-toggle audio-off";
+                btn.innerText = "🔊 ENCENDER AUDIO DE COCINA";
+                console.log("🔇 Audio de cocina desactivado.");
+            }
+        };
 
-        window.toggleShop = () => { set(statusRef, !isShopOpen); };
+        window.toggleShop = () => set(ref(db, 'shopStatus'), !isShopOpen);
 
-        function renderShopStatus() {
+        // --- FIREBASE LISTENERS ---
+        onValue(ref(db, 'shopStatus'), (snap) => {
+            isShopOpen = snap.val();
             const btn = document.getElementById('shop-status-btn');
             const label = document.getElementById('status-label');
-            if (isShopOpen) { btn.className = "shop-switch open"; label.innerText = "🟢 ABIERTO"; } 
-            else { btn.className = "shop-switch closed"; label.innerText = "🔴 CERRADO"; }
-        }
-function formatOrderTime(ts) {
-  const d = new Date(ts);
-  const hh = d.getHours().toString().padStart(2, "0");
-  const mm = d.getMinutes().toString().padStart(2, "0");
-  return `${hh}:${mm}`;
-}
+            if (btn) btn.className = isShopOpen ? "shop-switch open" : "shop-switch closed";
+            if (label) label.innerText = isShopOpen ? "🟢 ABIERTO" : "🔴 CERRADO";
+        });
 
-        // --- ESPECIALES (LÓGICA NUEVA) ---
+        onValue(ref(db, "orders"), (snap) => {
+            const data = snap.val();
+            if (!data) {
+                knownOrders.clear();
+                renderOrders(null);
+                return;
+            }
+            const currentIds = Object.keys(data);
+            let newOrderFound = false;
+
+            currentIds.forEach(id => {
+                if (!knownOrders.has(id)) {
+                    knownOrders.add(id);
+                    if (!firstLoad) newOrderFound = true;
+                }
+            });
+
+            if (newOrderFound && audioEnabled) {
+                orderSound.currentTime = 0;
+                orderSound.play().catch(e => console.error("Error al reproducir audio:", e));
+            }
+
+            firstLoad = false;
+            renderOrders(data);
+        });
+
+        // --- UI RENDERING ---
+        function renderOrders(data) {
+            const wrap = document.getElementById("orders-list");
+            wrap.innerHTML = "";
+            if (!data) { wrap.innerHTML = "<div style='text-align:center; padding:20px; color:#555;'>No hay pedidos pendientes</div>"; return; }
+            
+            Object.entries(data).sort((a, b) => b[1].time - a[1].time).forEach(([id, order]) => {
+                const card = document.createElement("div");
+                card.className = `order-card ${order.status === 'listo' ? 'order-listo' : ''}`;
+                
+                let pizzasHTML = (order.pizzas || []).map((p, i) => `
+                    <div class="pizza-block">
+                        <strong>🍕 Pizza ${i + 1}</strong><br>
+                        Ing: ${(p.ingredients || []).slice(0,2).join(", ") || "Solo Queso"}<br>
+                        Ext: ${(p.ingredients || []).slice(2).join(", ") || "—"}<br>
+                        Ade: ${(p.dressings || []).join(", ") || "—"}
+                    </div>
+                `).join("");
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <strong style="font-size:1.2rem;">${order.name}</strong>
+                        <span class="status ${order.status}" style="font-size:0.8rem; text-transform:uppercase;">${order.status}</span>
+                    </div>
+                    ${order.notes ? `<div style="color:var(--gold); font-size:0.9rem; margin-bottom:10px; background:rgba(238,201,150,0.1); padding:8px; border-radius:5px;">📝 ${order.notes}</div>` : ""}
+                    ${pizzasHTML}
+                    <div class="actions">
+                        <button class="btn-done" onclick="completeOrder('${id}')">${order.status === 'listo' ? 'RE-ABRIR' : 'MARCAR LISTO'}</button>
+                        <button class="btn-delete" onclick="deleteOrder('${id}')">BORRAR</button>
+                    </div>
+                `;
+                wrap.appendChild(card);
+            });
+        }
+
+        // --- HELPER ACTIONS ---
         window.addNewSpecial = () => {
             const input = document.getElementById('new-special-name');
-            const name = input.value.trim();
-            if(name) {
-                // Se guarda como { "Higos": true }
-                set(ref(db, 'specials/' + name), true);
+            if(input.value.trim()) {
+                set(ref(db, 'specials/' + input.value.trim()), true);
                 input.value = '';
             }
         };
 
         window.deleteSpecial = (name) => {
-            if(confirm(`¿Eliminar "${name}" de los especiales?`)) {
-                remove(ref(db, 'specials/' + name));
-            }
+            if(confirm(`¿Eliminar ${name}?`)) remove(ref(db, 'specials/' + name));
         };
 
-        onValue(specialsRef, (snapshot) => {
-            const list = document.getElementById('special-list');
+        window.completeOrder = (id) => {
+            const r = ref(db, `orders/${id}`);
+            get(r).then(s => update(r, { status: s.val().status === "listo" ? "pending" : "listo" }));
+        };
+
+        window.deleteOrder = (id) => {
+            if(confirm("¿Seguro que deseas eliminar este pedido permanentemente?")) remove(ref(db, `orders/${id}`));
+        };
+
+        window.toggleItem = (node, name, current) => update(ref(db, node), { [name]: !current });
+
+        function renderStandard(data, elId, node) {
+            const list = document.getElementById(elId);
             list.innerHTML = '';
-            const data = snapshot.val();
-            
-            if (data) {
-                Object.keys(data).forEach(itemName => {
-                    const div = document.createElement('div');
-                    div.className = 'item-row';
-                    // Estilo diferente: Solo mostrar y borrar
-                    div.style.borderColor = "var(--gold)";
-                    div.innerHTML = `
-                        <span class="item-name" style="color:var(--gold); font-weight:bold;">★ ${itemName}</span>
-                        <button class="delete-btn" onclick="deleteSpecial('${itemName}')">🗑️ BORRAR</button>
-                    `;
-                    list.appendChild(div);
-                });
-            } else {
-                list.innerHTML = '<div style="text-align:center; color:#555; padding:10px;">No hay especiales activos</div>';
-            }
-        });
-
-        // --- INGREDIENTES Y ADEREZOS STANDAR ---
-        onValue(ingredientsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) {
-                const initialData = {};
-                masterIngredients.forEach(ing => initialData[ing] = true);
-                set(ingredientsRef, initialData);
-            } else { renderList(data, 'ing-list', 'ingredients'); }
-        });
-
-        onValue(dressingsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) {
-                const initialData = {};
-                masterDressings.forEach(d => initialData[d] = true);
-                set(dressingsRef, initialData);
-            } else { renderList(data, 'dressing-list', 'dressings'); }
-        });
-
-        function renderList(data, elementId, dbNode) {
-            const list = document.getElementById(elementId);
-            list.innerHTML = ''; 
-            Object.keys(data).sort().forEach(itemName => {
-                const isAvailable = data[itemName];
+            if(!data) return;
+            Object.keys(data).sort().forEach(name => {
+                const ok = data[name];
                 const div = document.createElement('div');
                 div.className = 'item-row';
-                div.innerHTML = `<span class="item-name" style="opacity: ${isAvailable ? 1 : 0.4}">${itemName}</span><button class="toggle-btn ${isAvailable ? 'on' : 'off'}" onclick="toggleItem('${dbNode}', '${itemName}', ${isAvailable})">${isAvailable ? 'DISPONIBLE' : 'AGOTADO'}</button>`;
+                div.innerHTML = `<span>${name}</span><button class="toggle-btn ${ok?'on':'off'}" onclick="toggleItem('${node}','${name}',${ok})">${ok?'SI':'NO'}</button>`;
                 list.appendChild(div);
             });
         }
-        //Órdenes
-    let audioUnlocked = false;
 
-function unlockAudio() {
-  if (audioUnlocked) return;
-  orderSound.play().then(() => {
-    orderSound.pause();
-    orderSound.currentTime = 0;
-    audioUnlocked = true;
-    console.log("🔓 Audio unlocked");
-  }).catch(() => {});
-}
-
-document.addEventListener("click", unlockAudio, { once: true });
-document.addEventListener("touchstart", unlockAudio, { once: true });
-
-const orderSound = document.getElementById("order-sound");
-
-onValue(ref(db, "orders"), snapshot => {
-  const wrap = document.getElementById("orders-list");
-  wrap.innerHTML = ""; // 🔥 REQUIRED: clear UI every update
-
-  const data = snapshot.val();
-  if (!data) {
-    knownOrders.clear();
-    return;
-  }
-
-  const currentIds = Object.keys(data);
-
-  // 🔔 detect NEW orders
-  currentIds.forEach(id => {
-    if (!knownOrders.has(id)) {
-      orderSound.currentTime = 0;
-      orderSound.play().catch(() => {});
-    }
-  });
-
-  // 🧠 update known orders
-  knownOrders.clear();
-  currentIds.forEach(id => knownOrders.add(id));
-
-  // 🧱 render everything fresh
-  renderOrders(data);
-});
-
-function renderOrders(data) {
-  const wrap = document.getElementById("orders-list");
-  wrap.innerHTML = "";
-
-  if (!data) {
-    wrap.innerHTML = `<div class="empty">No hay pedidos</div>`;
-    return;
-  }
-
-  Object.entries(data)
-    .sort((a, b) => b[1].time - a[1].time) // newest first
-    .forEach(([id, order]) => {
-      const card = document.createElement("div");
-      card.className = "order-card";
-
-      let pizzasHTML = "";
-
-      (order.pizzas || []).forEach((p, i) => {
-        pizzasHTML += `
-          <div class="pizza-block">
-            <strong>🍕 Pizza ${i + 1}</strong><br>
-            Ingredientes: ${(p.ingredients || []).join(", ") || "—"}<br>
-            Extras: ${(p.ingredients || []).slice(2).join(", ") || "—"}<br>
-            Aderezos: ${(p.dressings || []).join(", ") || "—"}
-          </div>
-        `;
-      });
-card.classList.toggle("order-listo", order.status === "listo");
-
-      card.innerHTML = `
-        <div class="order-header">
-          <strong>${order.name}</strong>
-          <span class="status ${order.status}">${order.status}</span>
-<span class="order-time">⏱️ ${formatOrderTime(order.time)}</span>
-        </div>
-
-        ${order.notes ? `<div class="notes">📝 ${order.notes}</div>` : ""}
-
-        <div class="pizzas">
-          ${pizzasHTML}
-        </div>
-
-        <div class="order-footer">
-          <span class="total">$${order.total}</span>
-
-          <div class="actions">
-            <button class="btn-done" onclick="completeOrder('${id}')">
-              MARCAR LISTO
-            </button>
-            <button class="btn-delete" onclick="deleteOrder('${id}')">
-              ELIMINAR
-            </button>
-          </div>
-        </div>
-      `;
-
-      wrap.appendChild(card);
-    });
-}
-
-
-        window.toggleItem = (dbNode, name, currentState) => { update(ref(db, dbNode), { [name]: !currentState }); };
-
-window.completeOrder = (id) => {
-  const orderRef = ref(db, `orders/${id}`);
-
-  get(orderRef).then(snapshot => {
-    if (!snapshot.exists()) return;
-
-    const currentStatus = snapshot.val().status;
-    const nextStatus = currentStatus === "listo" ? "pending" : "listo";
-
-    update(orderRef, { status: nextStatus });
-  });
-};
-
-
-
-
-
-window.deleteOrder = (id) => {
-  if (!confirm("¿Eliminar pedido?")) return;
-  const orderRef = ref(db, `orders/${id}`);
-  remove(orderRef);
-};
-
+        onValue(ref(db, 'ingredients'), s => renderStandard(s.val(), 'ing-list', 'ingredients'));
+        onValue(ref(db, 'dressings'), s => renderStandard(s.val(), 'dressing-list', 'dressings'));
+        onValue(ref(db, 'specials'), s => {
+            const list = document.getElementById('special-list');
+            list.innerHTML = '';
+            if(s.val()) Object.keys(s.val()).forEach(n => {
+                const div = document.createElement('div');
+                div.className = 'item-row';
+                div.innerHTML = `<span style="color:var(--gold)">★ ${n}</span><button class="delete-btn" onclick="deleteSpecial('${n}')">🗑️</button>`;
+                list.appendChild(div);
+            });
+        });
     </script>
 </body>
 </html>
