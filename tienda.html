@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tienda | De La Monja</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="logopizza.png">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <style>
+        :root { --bg: #0f0f0f; --red: #ff0013; --gold: #eec996; --white: #ffffff; }
+        body { margin: 0; padding: 0 0 100px 0; font-family: Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--white); -webkit-text-size-adjust: none; }
+        
+        .header { text-align: center; padding: 20px; border-bottom: 2px solid var(--red); background: #000; }
+        .header img { max-width: 120px; }
+
+        .container { width: 90%; margin: 0 auto; }
+        .section-title { color: var(--red); text-transform: uppercase; letter-spacing: 2px; margin: 25px 0 10px 0; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
+
+        /* SIZE SELECTOR */
+        .size-selector { display: table; width: 100%; border-spacing: 10px; }
+        .size-btn { display: table-cell; background: #1a1a1a; border: 1px solid #444; padding: 15px; border-radius: 12px; text-align: center; color: #888; font-weight: bold; cursor: pointer; }
+        .size-btn.active { border-color: var(--red); color: white; background: rgba(255, 0, 19, 0.2); box-shadow: 0 0 15px var(--red); }
+
+        /* TABS */
+        .pizza-tabs { text-align: center; padding: 15px 0; }
+        .pizza-tab { display: inline-block; padding: 12px 20px; margin: 5px; border: 1px solid #444; border-radius: 8px; color: #ccc; cursor: pointer; }
+        .pizza-tab.active { background: var(--red); color: white; border-color: var(--red); font-weight: bold; }
+        .add-btn { background: var(--gold); color: black; font-weight: bold; border: none; }
+
+        /* GRID */
+        .grid { display: block; overflow: hidden; }
+        .card { float: left; width: 44%; margin: 2%; background: #1a1a1a; padding: 12px; border-radius: 10px; border: 1px solid #333; box-sizing: border-box; min-height: 55px; }
+        .card.selected { border-color: var(--red); background: rgba(255, 0, 19, 0.1); box-shadow: 0 0 10px rgba(255, 0, 19, 0.3); }
+        .card.disabled { opacity: 0.3; }
+        .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); margin-right: 8px; }
+        .card.selected .dot { background: var(--red); }
+
+        .total-box { position: fixed; bottom: 0; width: 100%; background: #000; padding: 15px; border-top: 2px solid var(--gold); text-align: center; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); }
+        .total-amount { font-size: 2.2rem; color: var(--gold); font-weight: bold; }
+        .order-btn { display: block; width: 85%; margin: 10px auto 0 auto; background: var(--red); color: white; padding: 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.2rem; box-shadow: 0 0 15px rgba(255, 0, 19, 0.4); border: none; cursor: pointer; }
+
+        /* MODAL */
+        #modal { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 200; overflow-y: scroll; }
+        .modal-body { width: 85%; margin: 30px auto; background: #111; padding: 25px; border: 1px solid var(--gold); border-radius: 20px; text-align: center; }
+        .summary-item { border-bottom: 1px solid #333; padding: 10px 0; text-align: left; }
+        
+        /* DELIVERY TOGGLE */
+        .deliv-selector { display: table; width: 100%; border-spacing: 5px; margin: 15px 0; }
+        .deliv-btn { display: table-cell; background: #222; border: 1px solid #444; padding: 12px; border-radius: 10px; font-size: 0.9rem; color: #888; cursor: pointer; }
+        .deliv-btn.active { border-color: var(--red); color: white; background: rgba(255, 0, 19, 0.2); }
+
+        .name-input { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; margin: 8px 0; font-size: 1.1rem; outline: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="logopizza.png" alt="Logo">
+    </div>
+
+    <div class="container">
+        <div class="pizza-tabs" id="tabs"></div>
+
+        <div class="section-title">Tamaño</div>
+        <div class="size-selector">
+            <div class="size-btn" id="sz-med" onclick="setSize('Mediana')">Mediana ($180)</div>
+            <div class="size-btn" id="sz-gde" onclick="setSize('Grande')">Gde ($220)</div>
+        </div>
+
+        <div class="section-title">Ingredientes</div>
+        <div class="grid" id="ing-list"></div>
+
+        <div id="spec-section" style="display:none;">
+            <div class="section-title">Especiales</div>
+            <div class="grid" id="spec-list"></div>
+        </div>
+
+        <div class="section-title">Aderezos</div>
+        <div class="grid" id="dress-list"></div>
+    </div>
+
+    <div class="total-box">
+        <div class="total-amount" id="total-display">$180</div>
+        <button class="order-btn" onclick="openModal()">REVISAR Y PEDIR</button>
+    </div>
+
+    <div id="modal">
+        <div class="modal-body">
+            <h2 style="color:var(--gold); margin-bottom:15px;">Tu Pedido</h2>
+            <div id="summary"></div>
+            
+            <p style="margin-top:20px; color:var(--red); font-weight:bold;">¿Dónde entregamos?</p>
+            <div class="deliv-selector">
+                <div class="deliv-btn active" id="dl-pickup" onclick="setDelivery('pickup')">🥡 Tienda</div>
+                <div class="deliv-btn" id="dl-brewery" onclick="setDelivery('brewery')">🍺 Borrega</div>
+            </div>
+
+            <input type="text" id="cust-name" class="name-input" placeholder="Tu Nombre...">
+            <input type="tel" id="cust-phone" class="name-input" placeholder="Teléfono...">
+            
+            <button onclick="sendOrder()" style="width:100%; padding:18px; background:var(--red); color:white; border:none; border-radius:50px; font-weight:bold; font-size:1.2rem; margin-top:15px;">CONFIRMAR PEDIDO</button>
+            <button onclick="closeModal()" style="width:100%; padding:10px; background:none; border:none; color:#888; margin-top:10px; font-weight:bold;">VOLVER</button>
+        </div>
+    </div>
+
+    <script>
+        // Compatibility check: Standard functions and var only
+        var firebaseConfig = {
+            apiKey: "AIzaSyCPZtmiXYBG33qOopqQTuK2yQjhPIs-nyU",
+            authDomain: "delamonjapizza.firebaseapp.com",
+            projectId: "delamonjapizza",
+            databaseURL: "https://delamonjapizza-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.database();
+
+        var pizzas = [{ size: 'Mediana', ingredients: [], dressings: [] }];
+        var currentIndex = 0;
+        var deliveryMethod = 'pickup';
+        var PRICES = { 'Mediana': 180, 'Grande': 220 };
+
+        function renderTabs() {
+            var html = '';
+            for(var i=0; i<pizzas.length; i++) {
+                html += '<div class="pizza-tab '+(i===currentIndex?'active':'')+'" onclick="switchPizza('+i+')">Pizza '+(i+1)+'</div>';
+            }
+            html += '<div class="pizza-tab add-btn" onclick="addPizza()">+</div>';
+            document.getElementById('tabs').innerHTML = html;
+        }
+
+        function switchPizza(idx) { currentIndex = idx; updateUI(); renderTabs(); }
+        function addPizza() { pizzas.push({ size: 'Mediana', ingredients: [], dressings: [] }); currentIndex = pizzas.length-1; updateUI(); renderTabs(); }
+        function setSize(s) { pizzas[currentIndex].size = s; updateUI(); }
+        function setDelivery(d) { 
+            deliveryMethod = d;
+            document.getElementById('dl-pickup').className = 'deliv-btn ' + (d==='pickup'?'active':'');
+            document.getElementById('dl-brewery').className = 'deliv-btn ' + (d==='brewery'?'active':'');
+        }
+
+        function toggle(listName, name) {
+            var list = pizzas[currentIndex][listName];
+            var idx = list.indexOf(name);
+            if(idx > -1) list.splice(idx, 1);
+            else list.push(name);
+            updateUI();
+        }
+
+        function updateUI() {
+            var p = pizzas[currentIndex];
+            document.getElementById('sz-med').className = 'size-btn ' + (p.size==='Mediana'?'active':'');
+            document.getElementById('sz-gde').className = 'size-btn ' + (p.size==='Grande'?'active':'');
+
+            var cards = document.getElementsByClassName('card');
+            for(var i=0; i<cards.length; i++) {
+                var name = cards[i].getAttribute('data-name');
+                var isSel = (p.ingredients.indexOf(name) > -1 || p.dressings.indexOf(name) > -1);
+                cards[i].className = 'card' + (cards[i].className.indexOf('disabled') > -1 ? ' disabled' : '') + (isSel ? ' selected' : '');
+            }
+
+            var total = 0;
+            for(var j=0; j<pizzas.length; j++) {
+                total += PRICES[pizzas[j].size] + (Math.max(0, pizzas[j].ingredients.length - 2) * 10);
+            }
+            document.getElementById('total-display').innerText = '$' + total;
+        }
+
+        function loadNode(path, elId, listName) {
+            db.ref(path).on('value', function(snap) {
+                var data = snap.val();
+                if(!data) return;
+                if(path === 'specials') document.getElementById('spec-section').style.display = 'block';
+                var html = '';
+                var keys = Object.keys(data).sort();
+                for(var i=0; i<keys.length; i++) {
+                    var name = keys[i];
+                    var avail = data[name];
+                    html += '<div class="card '+(avail?'':'disabled')+'" data-name="'+name+'" onclick="'+(avail?'toggle(\''+listName+'\',\''+name+'\')':'')+'">';
+                    html += '<div class="dot"></div>'+name+'</div>';
+                }
+                document.getElementById(elId).innerHTML = html;
+                updateUI();
+            });
+        }
+
+        function openModal() {
+            var html = '';
+            for(var i=0; i<pizzas.length; i++) {
+                var p = pizzas[i];
+                html += '<div class="summary-item">';
+                html += '<strong>Pizza #'+(i+1)+' ('+(p.size==='Grande'?'Gde':'Med')+')</strong><br>';
+                html += '<small>'+(p.ingredients.join(', ') || 'Solo Queso')+'</small></div>';
+            }
+            document.getElementById('summary').innerHTML = html;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        function sendOrder() {
+            var name = document.getElementById('cust-name').value;
+            var phone = document.getElementById('cust-phone').value;
+            if(!name) return alert("Por favor ingresa tu nombre");
+            
+            var total = 0;
+            for(var j=0; j<pizzas.length; j++) {
+                total += PRICES[pizzas[j].size] + (Math.max(0, pizzas[j].ingredients.length - 2) * 10);
+            }
+
+            db.ref('orders').push({
+                name: name,
+                notes: "TDA-Tel: " + (phone || "N/A"),
+                pizzas: pizzas,
+                total: total,
+                delivery: deliveryMethod,
+                time: Date.now(),
+                status: 'pending'
+            }, function(err) {
+                if(!err) {
+                    alert("¡Gracias! Tu pedido está en cocina.");
+                    location.reload();
+                }
+            });
+        }
+
+        loadNode('ingredients', 'ing-list', 'ingredients');
+        loadNode('specials', 'spec-list', 'ingredients');
+        loadNode('dressings', 'dress-list', 'dressings');
+        renderTabs();
+
+    </script>
+</body>
+</html>
