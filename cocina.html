@@ -11,7 +11,6 @@
         h1 { text-align: center; color: var(--gold); margin-top: 5px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px;}
         h2 { text-align: center; color: #ccc; margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 1.2rem;}
         
-        /* AUDIO TOGGLE STYLES */
         .audio-toggle { padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
         .audio-off { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(238, 201, 150, 0.3); }
         .audio-on { background: rgba(0, 200, 81, 0.1); color: var(--green); border-color: var(--green); }
@@ -29,14 +28,24 @@
         .toggle-btn.off { background: var(--red); color: white; opacity: 0.6; }
         .delete-btn { background: transparent; border: 1px solid #555; color: #ff4444; margin-left: 10px; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
         
-        .order-card { background: #222; padding: 15px; border-radius: 12px; border: 1px solid #444; margin-bottom: 10px; }
+        .order-card { background: #222; padding: 15px; border-radius: 12px; border: 1px solid #444; margin-bottom: 10px; position: relative; }
         .order-listo { border-left: 4px solid #1ed760; opacity: 0.85; }
         .status.listo { color: #1ed760; font-weight: 700; }
+        
+        /* NEW STYLES FOR KITCHEN AID */
+        .order-total { color: var(--gold); font-size: 1.3rem; font-weight: bold; display: block; margin: 4px 0; }
+        .delivery-badge { background: #444; color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .badge-pickup { background: #333; }
+        .badge-brewery { background: #d4a017; color: #000; }
+        .badge-barra27 { background: #6a0dad; }
+        .badge-manda2 { background: #ff4444; }
+
         .actions { display: flex; gap: 10px; margin-top: 10px; }
         .actions button { padding: 8px 14px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; }
         .btn-done { background: linear-gradient(135deg, #1db954, #1ed760); color: #111; }
         .btn-delete { background: transparent; color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.4); }
-        .pizza-block { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 5px; margin-top: 5px; font-size: 0.9rem; }
+        .pizza-block { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 5px; margin-top: 5px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1); }
+        .pizza-size-label { color: var(--gold); font-weight: bold; margin-left: 5px; }
         
         .add-special-box { display: flex; gap: 10px; margin-bottom: 15px; }
         .special-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 1rem; }
@@ -100,31 +109,23 @@
         let audioEnabled = false;
         const orderSound = document.getElementById("order-sound");
 
-        // --- GLOBAL EXPOSURE ---
         window.toggleAudioSystem = () => {
             const btn = document.getElementById('audio-toggle-btn');
-            
             if (!audioEnabled) {
-                // Try to play sound immediately as feedback/unlock
                 orderSound.play().then(() => {
                     audioEnabled = true;
                     btn.className = "audio-toggle audio-on";
                     btn.innerText = "✅ AUDIO ACTIVADO (Click para apagar)";
-                    console.log("🔊 Audio de cocina activado y probado.");
-                }).catch(e => {
-                    alert("Interacción requerida: Haz click de nuevo para permitir el sonido.");
-                });
+                }).catch(e => alert("Interacción requerida: Haz click de nuevo."));
             } else {
                 audioEnabled = false;
                 btn.className = "audio-toggle audio-off";
                 btn.innerText = "🔊 ENCENDER AUDIO DE COCINA";
-                console.log("🔇 Audio de cocina desactivado.");
             }
         };
 
         window.toggleShop = () => set(ref(db, 'shopStatus'), !isShopOpen);
 
-        // --- FIREBASE LISTENERS ---
         onValue(ref(db, 'shopStatus'), (snap) => {
             isShopOpen = snap.val();
             const btn = document.getElementById('shop-status-btn');
@@ -135,31 +136,20 @@
 
         onValue(ref(db, "orders"), (snap) => {
             const data = snap.val();
-            if (!data) {
-                knownOrders.clear();
-                renderOrders(null);
-                return;
-            }
+            if (!data) { knownOrders.clear(); renderOrders(null); return; }
             const currentIds = Object.keys(data);
             let newOrderFound = false;
-
             currentIds.forEach(id => {
                 if (!knownOrders.has(id)) {
                     knownOrders.add(id);
                     if (!firstLoad) newOrderFound = true;
                 }
             });
-
-            if (newOrderFound && audioEnabled) {
-                orderSound.currentTime = 0;
-                orderSound.play().catch(e => console.error("Error al reproducir audio:", e));
-            }
-
+            if (newOrderFound && audioEnabled) { orderSound.currentTime = 0; orderSound.play().catch(e => console.error(e)); }
             firstLoad = false;
             renderOrders(data);
         });
 
-        // --- UI RENDERING ---
         function renderOrders(data) {
             const wrap = document.getElementById("orders-list");
             wrap.innerHTML = "";
@@ -169,22 +159,45 @@
                 const card = document.createElement("div");
                 card.className = `order-card ${order.status === 'listo' ? 'order-listo' : ''}`;
                 
+                // Pizza Block updated with Size
                 let pizzasHTML = (order.pizzas || []).map((p, i) => `
                     <div class="pizza-block">
-                        <strong>🍕 Pizza ${i + 1}</strong><br>
-                        Ing: ${(p.ingredients || []).slice(0,2).join(", ") || "Solo Queso"}<br>
-                        Ext: ${(p.ingredients || []).slice(2).join(", ") || "—"}<br>
-                        Ade: ${(p.dressings || []).join(", ") || "—"}
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong>🍕 Pizza ${i + 1}</strong>
+                            <span class="pizza-size-label">${p.size === 'Grande' ? 'GRANDE' : 'MEDIANA'}</span>
+                        </div>
+                        <div style="margin-top:4px;">
+                            Ing: ${(p.ingredients || []).slice(0,2).join(", ") || "Solo Queso"}<br>
+                            Ext: ${(p.ingredients || []).slice(2).join(", ") || "—"}<br>
+                            Ade: ${(p.dressings || []).join(", ") || "—"}
+                        </div>
                     </div>
                 `).join("");
 
+                // Delivery badge logic
+                let deliveryLabel = "";
+                let deliveryClass = "";
+                switch(order.delivery) {
+                    case 'pickup': deliveryLabel = "🥡 RECOGER"; deliveryClass = "badge-pickup"; break;
+                    case 'brewery': deliveryLabel = "🍺 BORREGA"; deliveryClass = "badge-brewery"; break;
+                    case 'barra27': deliveryLabel = "🍸 BARRA 27"; deliveryClass = "badge-barra27"; break;
+                    case 'manda2': deliveryLabel = "🛵 MANDA2"; deliveryClass = "badge-manda2"; break;
+                    default: deliveryLabel = "🥡 TIENDA"; deliveryClass = "badge-pickup";
+                }
+
                 card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <strong style="font-size:1.2rem;">${order.name}</strong>
-                        <span class="status ${order.status}" style="font-size:0.8rem; text-transform:uppercase;">${order.status}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <strong style="font-size:1.2rem; display:block;">${order.name}</strong>
+                            <span class="order-total">$${order.total || 0}</span>
+                        </div>
+                        <span class="delivery-badge ${deliveryClass}">${deliveryLabel}</span>
                     </div>
-                    ${order.notes ? `<div style="color:var(--gold); font-size:0.9rem; margin-bottom:10px; background:rgba(238,201,150,0.1); padding:8px; border-radius:5px;">📝 ${order.notes}</div>` : ""}
+                    
+                    ${order.notes ? `<div style="color:var(--gold); font-size:0.9rem; margin:10px 0; background:rgba(238,201,150,0.1); padding:8px; border-radius:5px;">📝 ${order.notes}</div>` : ""}
+                    
                     ${pizzasHTML}
+                    
                     <div class="actions">
                         <button class="btn-done" onclick="completeOrder('${id}')">${order.status === 'listo' ? 'RE-ABRIR' : 'MARCAR LISTO'}</button>
                         <button class="btn-delete" onclick="deleteOrder('${id}')">BORRAR</button>
@@ -194,27 +207,19 @@
             });
         }
 
-        // --- HELPER ACTIONS ---
         window.addNewSpecial = () => {
             const input = document.getElementById('new-special-name');
-            if(input.value.trim()) {
-                set(ref(db, 'specials/' + input.value.trim()), true);
-                input.value = '';
-            }
+            if(input.value.trim()) { set(ref(db, 'specials/' + input.value.trim()), true); input.value = ''; }
         };
 
-        window.deleteSpecial = (name) => {
-            if(confirm(`¿Eliminar ${name}?`)) remove(ref(db, 'specials/' + name));
-        };
+        window.deleteSpecial = (name) => { if(confirm(`¿Eliminar ${name}?`)) remove(ref(db, 'specials/' + name)); };
 
         window.completeOrder = (id) => {
             const r = ref(db, `orders/${id}`);
             get(r).then(s => update(r, { status: s.val().status === "listo" ? "pending" : "listo" }));
         };
 
-        window.deleteOrder = (id) => {
-            if(confirm("¿Seguro que deseas eliminar este pedido permanentemente?")) remove(ref(db, `orders/${id}`));
-        };
+        window.deleteOrder = (id) => { if(confirm("¿Seguro que deseas eliminar este pedido?")) remove(ref(db, `orders/${id}`)); };
 
         window.toggleItem = (node, name, current) => update(ref(db, node), { [name]: !current });
 
