@@ -178,7 +178,7 @@
             </div>
 
             <div class="extras-row" id="extra-row">
-                <span id="extra-label"><strong>¿Ingredientes Extra? (+$10)</strong></span>
+                <span id="extra-label"><strong>¿Ingredientes Extra? (+$15)</strong></span>
                 <div class="extra-price" id="extra-check">+</div>
             </div>
 
@@ -335,9 +335,9 @@
 
             const extras = Math.max(0, p.ingredients.length - 2);
             document.getElementById('extra-row').className = extras > 0 ? 'extras-row active' : 'extras-row';
-            document.getElementById('extra-label').innerHTML = extras > 0 ? `<strong>Extras: ${extras} (+$${extras*10})</strong>` : `<strong>¿Ingredientes Extra? (+$10)</strong>`;
+            document.getElementById('extra-label').innerHTML = extras > 0 ? `<strong>Extras: ${extras} (+$${extras*15})</strong>` : `<strong>¿Ingredientes Extra? (+$15)</strong>`;
 
-            let total = pizzas.reduce((acc, curr) => acc + PRICES[curr.size] + (Math.max(0, curr.ingredients.length - 2) * 10), 0);
+            let total = pizzas.reduce((acc, curr) => acc + PRICES[curr.size] + (Math.max(0, curr.ingredients.length - 2) * 15), 0);
             document.getElementById('total-display').innerText = "$" + total;
         };
 
@@ -351,7 +351,7 @@
             const content = document.getElementById('modal-summary-content');
             let total = 0;
             content.innerHTML = pizzas.map((p, i) => {
-                const sub = PRICES[p.size] + (Math.max(0, p.ingredients.length - 2) * 10);
+                const sub = PRICES[p.size] + (Math.max(0, p.ingredients.length - 2) * 15);
                 total += sub;
                 return `<div style="border-bottom:1px solid #333; margin-bottom:10px; padding-bottom:5px;">
                     <strong>Pizza #${i+1} (${p.size === 'Grande' ? 'Gde' : 'Med'})</strong> $${sub}<br>
